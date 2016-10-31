@@ -3,12 +3,11 @@ A Discord bot coded for my [Poolandia Minecraft Guild](https://hypixel.net/guild
 
 It adds useful function to the Discord Server.
 
-**Note that permissions is WIP, add the User ID of the admin to use admin-only commands in start.js**
-
 # Features
-**Beta** Added detection for bot outputs in non-bot channels, and the option to delete them automatically.
+Edit user permissions by adding them into config.json
 
-**Beta** Added proper permissions for bot.
+Tweak what channels to whitelist bot messages, and what servers to enforce antispam in config.json
+
 - /ping - Pings the Bot. Useful for checking up on WaveBot.
 - /say [text] - The Bot writes [text] into text channel.
 - /help - Shows a helpful list of command in Discord
@@ -38,5 +37,5 @@ designated bot only channel IDs in the array.
 # Installation
 
 After this repo is downloaded, do ```npm install```, edit the ```auth.json``` file with the token of your bot's account,
-and use ```node start.js``` to start the bot.
+and use ```node start.js``` to start the bot. Also checkout ```config.json``` if you want to use the antispam function.
 
