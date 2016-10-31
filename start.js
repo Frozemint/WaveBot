@@ -74,7 +74,7 @@ bot.on('message', message => {
 
 		var commandText = message.content.split(" "); //Sort command and arguments into array
 
-		message.delete();
+		//message.delete();
 
 		/* Commands */
 		switch (commandText[0].toLowerCase()) {
