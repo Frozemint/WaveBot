@@ -1,0 +1,23 @@
+{
+  "name": "wavebot",
+  "version": "1.0.0",
+  "description": "A Discord.js bot written by Johnathan Wong (Nami)",
+  "main": "start.js",
+  "scripts": {
+    "test": "/about"
+  },
+  "author": "Johnathan Wong (Nami)",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^9.3.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Frozemint/WaveBot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Frozemint/WaveBot/issues"
+  },
+  "homepage": "https://github.com/Frozemint/WaveBot#readme"
+}
