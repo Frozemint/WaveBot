@@ -45,7 +45,7 @@ function checkPermissions(user){
 function antiSpamFunction(message){
 	
 	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1){
-		console.log(Date() + 'Flagged message from bot: ' + message.author.username + ' as spam and will be removed.');
+		console.log(Date() + ': Flagged message from bot: ' + message.author.username + ' as spam and will be removed.');
 		return true;
 	} else {
 		return false;
@@ -58,6 +58,11 @@ bot.on("ready", () => {
 	console.log('I am currently in ' + bot.guilds.array().length + ' server(s).');
 	bot.user.setStatus("online", '/help to start');
 });
+
+bot.on('disconnected', function(){
+	console.log(Date() + ': Bot has been disconnected.');
+	//process.exit();
+})
 
 
 bot.on('message', message => {
