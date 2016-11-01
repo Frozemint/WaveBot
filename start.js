@@ -5,7 +5,7 @@ const bot = new Discord.Client();
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/civin', '/clearall', '/exit', '/help', '/about'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/civin', '/clearall', '/exit', '/help', '/about', '/stat'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
@@ -15,6 +15,10 @@ var antiSpam = config.passiveClear;
 const botOnlyChannels = config.botChannel;
 //botOnlyServers is the list of servers that antispam should monitor.
 const botOnlyServers = config.checkServers;
+
+//Counters for stats, don't ask why
+var messagesCount = 0;
+var removedMessages = 0;
 
 
 process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
@@ -56,20 +60,23 @@ bot.on("ready", () => {
 	//This is run when the bot is ready in discord.
 	console.log('Time is now: ' + Date());
 	console.log('I am currently in ' + bot.guilds.array().length + ' server(s).');
-	bot.user.setStatus("online", '/help to start');
+	bot.user.setStatus("online");
+	bot.user.setGame('/help to start');
 });
 
-bot.on('disconnected', function(){
+bot.on('disconnect', function(){
 	console.log(Date() + ': Bot has been disconnected.');
 	//process.exit();
 })
 
 
 bot.on('message', message => {
+	messagesCount++;
 	//If antispam function returns true, then the message is in an undesired channel,
 	//originates from a bot, and will be removed.
 	if (antiSpamFunction(message) === true){ 
 		message.delete();
+		removedMessages++;
 	}
 
 	if (message.content[0] === '/' && message.author.bot != true){ 
@@ -221,6 +228,15 @@ bot.on('message', message => {
 					'Check out my source code here: https://github.com/Frozemint/WaveBot');
 				break;
 
+			
+			case "/stat":
+				message.channel.sendMessage('Currently logged in as: ' + bot.user.username + '\n' +
+					"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
+					"You are an admin: " + checkPermissions(message.author) +
+					"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
+				break;
+
+			
 			default:
 				//This section will run if we run all the comparing above and 
 				//none was found.

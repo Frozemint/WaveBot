@@ -9,9 +9,11 @@
   "author": "Johnathan Wong (Nami)",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^9.3.1"
+    "discord.js": "^10.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "node-opus": "^0.2.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Frozemint/WaveBot.git"
