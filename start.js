@@ -20,6 +20,9 @@ const botOnlyServers = config.checkServers;
 var messagesCount = 0;
 var removedMessages = 0;
 
+//botIsKill is used to determine whether to reconnect the bot in case of a disconnection
+var botIsKill = false;
+
 
 process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
 process.on('exit', exitHandler.bind({reason: 'Exiting.'}));
@@ -38,7 +41,7 @@ function checkPermissions(user){
 	//This function checks the permission of a user against
 	//the config.json array of trusted users.
 	if (config.allowedUsers.indexOf(user.id) > -1){
-		console.log('User ' + user.username + ' is admin, running command.');
+		console.log(Date() + ': User ' + user.username + ' is admin, running command.');
 		return true;
 	} else {
 		console.log('User ' + user.username + ' just attempted to run a admin only command and was denied.');
@@ -66,7 +69,12 @@ bot.on("ready", () => {
 
 bot.on('disconnect', function(){
 	console.log(Date() + ': Bot has been disconnected.');
-	//process.exit();
+	if(botIsKill){
+		process.exit();
+	} else {
+		console.log(Date() + ': Attempting to reconnect...');
+		bot.login(auth.token);	
+	}
 })
 
 
@@ -195,7 +203,7 @@ bot.on('message', message => {
 			case "/exit":
 				//Exit the bot process.
 				if (checkPermissions(message.author)){
-					console.log('Shuting down bot by /exit command.');
+					console.log(Date() + ': Shuting down bot by /exit command.');
 					process.exit(0);
 				} else {
 					console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to shutdown the bot and was denied.');
