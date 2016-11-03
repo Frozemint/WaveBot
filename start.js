@@ -30,7 +30,7 @@ process.on('SIGTERM', exitHandler.bind({reason: 'SIGKILL'}));
 
 function exitHandler(reason){
 	//Exit handler for checking why the bot exits.
-	console.log('\nQUITTING. Reason: ' + this.reason);
+	console.log('\n' + Date() + ': QUITTING. Reason: ' + this.reason);
 	bot.destroy().then(function(){
 		//Logs out of discord before exiting.
   		process.exit();
@@ -46,6 +46,7 @@ function checkPermissions(user){
 	} else {
 		console.log('User ' + user.username + ' just attempted to run a admin only command and was denied.');
 		message.channel.sendMessage('You do not have permission to execute the said command, this incident will be reported.');
+		return false;
 	}
 }
 
