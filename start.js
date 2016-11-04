@@ -5,11 +5,14 @@ const bot = new Discord.Client();
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/civin', '/clearall', '/exit', '/help', '/about', '/stat'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/civin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
 var antiSpam = config.passiveClear;
+
+//whiteListArray is used for detecting whitelisted words
+const whiteListArray = config.whitelistWords;
 
 //botOnlyChannel is the whitelisted channels that is immune from passiveClear.
 const botOnlyChannels = config.botChannel;
@@ -51,8 +54,10 @@ function checkPermissions(user){
 }
 
 function antiSpamFunction(message){
-	
-	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1){
+
+	//NOT IN botonlychannels, in servers to monitor
+	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
+		console.log(message.content.toLowerCase());
 		console.log(Date() + ': Flagged message from bot: ' + message.author.username + ' as spam and will be removed.');
 		return true;
 	} else {
@@ -156,7 +161,7 @@ bot.on('message', message => {
 						message.channel.fetchMessages({limit: 100}).then(messages =>{
 							message.channel.bulkDelete(messages.filter(function(selectedMessage){
 								selectedMessage = selectedMessage.content.toLowerCase();
-								if (commandArray.indexOf(selectedMessage) > -1 || selectedMessage.startsWith('/civin')){
+								if (commandArray.indexOf(selectedMessage) > -1 || selectedMessage.startsWith('/civin') || selectedMessage.startsWith('/say')){
 									return true;
 								}
 								return false;
