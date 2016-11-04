@@ -246,7 +246,7 @@ bot.on('message', message => {
 			case "/stat":
 				message.channel.sendMessage('Currently logged in as: ' + bot.user.username + '\n' +
 					"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
-					"You are an admin: " + checkPermissions(message.author) +
+					"You are an admin: " + (config.allowedUsers.indexOf(message.author.id) > -1) +
 					"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
 				break;
 
