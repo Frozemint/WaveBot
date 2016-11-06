@@ -26,8 +26,6 @@ var removedMessages = 0;
 //botIsKill is used to determine whether to reconnect the bot in case of a disconnection
 var botIsKill = false;
 
-var test = 0;
-
 
 process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
 process.on('exit', exitHandler.bind({reason: 'Exiting.'}));
@@ -72,8 +70,21 @@ function findMessage(message){
 }
 
 function findUserMessages(message){
-	if (commandArray.indexOf(message.content.toLowerCase()) != -1){return true;}
+	for (var i = 0; i < commandArray.length; i++){
+		if (message.content.toLowerCase().startsWith(commandArray[i])){
+			return true;
+		}
+	}
+	return false;
+}
 
+function spamFiltering(message){
+	for (var i = 0; i < whiteListArray.length; i++){
+		if (message.content.toLowerCase().startsWith(whiteListArray[i])){
+			return true;
+		}
+	}
+	return false;
 }
 
 bot.on("ready", () => {
