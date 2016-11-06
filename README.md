@@ -12,14 +12,14 @@ Tweak what channels to whitelist bot messages, and what servers to enforce antis
 - /say [text] - The Bot writes [text] into text channel.
 - /help - Shows a helpful list of command in Discord
 - /about - Shows info about WaveBot
+- /stat - Shows some statistics about the WaveBot
 
 *Admin only commands*
 
 - /clear - Clear all the output by WaveBot in the channel this command was typed in.
 - /clrcom - Clear all user commands to WaveBot in the channel this command was typed in.
-- /clearall - Clear ALL bot outputs in a text channel, including WaveBot.
 - /antispam - Toggle antispam for automatically deleting bot outputs in non-bot channels.
-- /civin [Delay in Minute] [Text] - After delay, writes [Text] to the text channel this command was typed in.
+- /sayin [Delay in Minute] [Text] - After delay, writes [Text] to the text channel this command was typed in.
  * Note that \ characters are escaped, use them to prevent spamming @everyone by writing @\everyone
 - /exit - Exits the bot.
 
@@ -32,6 +32,7 @@ IDs in the array.
 Set to ``true`` to automatically start antispam.
 - ``botChannel`` - An array of whitelisted Discord Text Channel IDs where bot messages are allowed in those channel. Paste the
 designated bot only channel IDs in the array.
+- ``whitelistedWords`` - If a bot prints a message containing these words, they will not be filtered.
 
 
 # Installation
