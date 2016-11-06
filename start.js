@@ -5,7 +5,7 @@ const bot = new Discord.Client();
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/civin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
@@ -25,6 +25,8 @@ var removedMessages = 0;
 
 //botIsKill is used to determine whether to reconnect the bot in case of a disconnection
 var botIsKill = false;
+
+var test = 0;
 
 
 process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
@@ -63,6 +65,10 @@ function antiSpamFunction(message){
 	} else {
 		return false;
 	}
+}
+
+function findMessage(message){
+	if (bot.user === message.author) {return true;}
 }
 
 bot.on("ready", () => {
@@ -115,9 +121,9 @@ bot.on('message', message => {
 				message.channel.sendMessage(message.content.substring(commandText[0].length+1)); 
 				break;
 
-			case "/civin":
+			case "/sayin":
 				//Announce text after set delay
-				//Usage: /civin <Delay in mins> <Text to announce>
+				//Usage: /sayin <Delay in mins> <Text to announce>
 				if (checkPermissions(message.author)){
 					var stringToPrint = message.content.substring(commandText[0].length + commandText[1].length + 2);
 					stringToPrint = stringToPrint.replace("\\",'');
@@ -133,64 +139,47 @@ bot.on('message', message => {
 				//message.delete();
 				console.log(message.author.username + ' requested to clear bot messages.');
 				
-				if (checkPermissions(message.author)){
-					if(message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-						message.channel.fetchMessages({limit: 100}).then(messages => {
-							message.channel.bulkDelete(messages.filter(function(selectedMessage){
-								if (selectedMessage.author.id === bot.user.id){
-									return true;
+				if (checkPermissions(message.author) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+					message.channel.fetchMessages({limit: 100}).then(function (m){
+						filtered = m.filter(findMessage.bind(this));
+						try {
+								if (filtered.size >=2 ){
+									message.channel.bulkDelete(filtered);
+									message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
+								} else {
+									message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
 								}
-								
-								return false;
-							}))
-						});
-					} else {
-						message.channel.sendMessage("Bot has no permission to perform operation.");
-					}
+							} catch (e){
+								message.channel.sendMessage('Failed to delete message. Check console.');
+								console.log(Date() + '- Error output:' + e);
+							}
+						})
+				} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+					message.channel.sendMessage('Bot has no permission to manage messages.');
 				}
 				break;
 
 			case "/clrcom":
 				//Clear all command messages from users.
-				//message.delete();
-				if (checkPermissions(message.author)){
-
-					console.log(message.author.username + ' requested to clear all entered user commands from channel : ' + message.channel);
-
-					if (message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-						message.channel.fetchMessages({limit: 100}).then(messages =>{
-							message.channel.bulkDelete(messages.filter(function(selectedMessage){
-								selectedMessage = selectedMessage.content.toLowerCase();
-								if (commandArray.indexOf(selectedMessage) > -1 || selectedMessage.startsWith('/civin') || selectedMessage.startsWith('/say')){
-									return true;
+				if (checkPermissions(message.author) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+					message.channel.fetchMessages({limit: 100}).then(function (m){
+						filtered = m.filter(findMessage.bind(this, 2));
+						try {
+								if (filtered.size >=2 ){
+									message.channel.bulkDelete(filtered);
+									message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
+								} else {
+									message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
 								}
-								return false;
-							}))
-						});
-					} else {
-						message.channel.sendMessage("Bot has no permission to perform operation.");
-					}
+							} catch (e){
+								message.channel.sendMessage('Failed to delete message. Check console.');
+								console.log(Date() + '- Error output:' + e);
+							}
+						})
+				} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+					message.channel.sendMessage('Bot has no permission to manage messages.');
 				}
 
-				break;
-
-			case "/clearall":
-				//Clear ALL messages from bots.
-				if (checkPermissions(message.author)){
-					if(message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-						message.channel.fetchMessages({limit: 100}).then(messages => {
-							message.channel.bulkDelete(messages.filter(function(selectedMessage){
-								if (selectedMessage.author.bot === true){
-									return true;
-								}
-								
-								return false;
-							}))
-						});
-					} else {
-						message.channel.sendMessage("Bot has no permission to perform operation.");
-					}
-				}
 				break;
 
 			case "/antispam":
@@ -229,7 +218,7 @@ bot.on('message', message => {
 					'/clrcom - Clear all commands from users to WaveBot in text channel\n' + 
 					'/clearall - Clear ALL bot outputs in a text channel, including WaveBot\n' +
 					'/antispam - Toggle antispam for automatically deleting bot outputs in non-bot channels\n' +
-					'/civin <delay in mins> <text> - After delay, print text into text channel\n' +
+					'/sayin <delay in mins> <text> - After delay, print text into text channel\n' +
 					'/exit - Exit this bot');
 				break;
 				
