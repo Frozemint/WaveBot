@@ -71,6 +71,11 @@ function findMessage(message){
 	if (bot.user === message.author) {return true;}
 }
 
+function findUserMessages(message){
+	if (commandArray.indexOf(message.content.toLowerCase()) != -1){return true;}
+
+}
+
 bot.on("ready", () => {
 	//This is run when the bot is ready in discord.
 	console.log('Time is now: ' + Date());
@@ -163,7 +168,7 @@ bot.on('message', message => {
 				//Clear all command messages from users.
 				if (checkPermissions(message.author) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
 					message.channel.fetchMessages({limit: 100}).then(function (m){
-						filtered = m.filter(findMessage.bind(this, 2));
+						filtered = m.filter(findUserMessages.bind(this));
 						try {
 								if (filtered.size >=2 ){
 									message.channel.bulkDelete(filtered);
