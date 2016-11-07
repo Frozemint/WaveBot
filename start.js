@@ -40,14 +40,14 @@ function exitHandler(reason){
   });
 }
 
-function checkPermissions(user){
+function checkPermissions(message){
 	//This function checks the permission of a user against
 	//the config.json array of trusted users.
-	if (config.allowedUsers.indexOf(user.id) > -1){
-		console.log(Date() + ': User ' + user.username + ' is admin, running command.');
+	if (config.allowedUsers.indexOf(message.author.id) > -1){
+		console.log(Date() + ': User ' + message.author.username + ' is admin, running command.');
 		return true;
 	} else {
-		console.log('User ' + user.username + ' just attempted to run a admin only command and was denied.');
+		console.log('User ' + message.author.username + ' just attempted to run a admin only command and was denied.');
 		message.channel.sendMessage('You do not have permission to execute the said command, this incident will be reported.');
 		return false;
 	}
@@ -144,7 +144,7 @@ bot.on('message', message => {
 			case "/sayin":
 				//Announce text after set delay
 				//Usage: /sayin <Delay in mins> <Text to announce>
-				if (checkPermissions(message.author)){
+				if (checkPermissions(message)){
 					var stringToPrint = message.content.substring(commandText[0].length + commandText[1].length + 2);
 					stringToPrint = stringToPrint.replace("\\",'');
 					setTimeout(function(){
@@ -159,7 +159,7 @@ bot.on('message', message => {
 				//message.delete();
 				console.log(message.author.username + ' requested to clear bot messages.');
 				
-				if (checkPermissions(message.author) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+				if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
 					message.channel.fetchMessages({limit: 100}).then(function (m){
 						filtered = m.filter(findMessage.bind(this));
 						try {
@@ -181,7 +181,7 @@ bot.on('message', message => {
 
 			case "/clrcom":
 				//Clear all command messages from users.
-				if (checkPermissions(message.author) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+				if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
 					message.channel.fetchMessages({limit: 100}).then(function (m){
 						filtered = m.filter(findUserMessages.bind(this));
 						try {
@@ -204,7 +204,7 @@ bot.on('message', message => {
 
 			case "/antispam":
 				//Toggle anti-spam detection.
-				if (checkPermissions(message.author)){
+				if (checkPermissions(message)){
 					if (antiSpam === true){
 						antiSpam = false;
 						message.channel.sendMessage('Admin: Bot Anti-spam is now toggled TO OFF.');
@@ -217,7 +217,7 @@ bot.on('message', message => {
 
 			case "/exit":
 				//Exit the bot process.
-				if (checkPermissions(message.author)){
+				if (checkPermissions(message)){
 					console.log(Date() + ': Shuting down bot by /exit command.');
 					process.exit(0);
 				} else {
