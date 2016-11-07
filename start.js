@@ -58,13 +58,12 @@ function antiSpamFunction(message){
 	//NOT IN botonlychannels, in servers to monitor
 	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
 		console.log(message.content.toLowerCase());
-		for (var i = 0; i < commandArray.length; i++){
+		for (var i = 0; i < whiteListArray.length; i++){
 			if (message.content.toLowerCase().startsWith(whiteListArray[i])){
-				console.log(Date() + ': Flagged message from bot: ' + message.author.username + ' as spam and will be removed.');
-				return true;
+				return false;
 			}
 		}
-		return false;
+		return true;
 	} else {
 		return false;
 	}
