@@ -91,6 +91,14 @@ function spamFiltering(message){
 	return false;
 }
 
+bot.on('error', (error) =>{
+	console.log(error);
+});
+
+bot.on('warn', (error) =>{
+	console.log(error);
+});
+
 bot.on("ready", () => {
 	//This is run when the bot is ready in discord.
 	console.log('Time is now: ' + Date());
@@ -107,7 +115,7 @@ bot.on('disconnect', function(){
 		console.log(Date() + ': Attempting to reconnect...');
 		bot.login(auth.token);	
 	}
-})
+});
 
 
 bot.on('message', message => {
