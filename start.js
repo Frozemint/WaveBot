@@ -1,6 +1,6 @@
 const auth = require("./auth.json");
 const Discord = require("discord.js");
-const bot = new Discord.Client();
+const bot = new Discord.Client({autoReconnect:true});
 
 //These users from config has access to everything. 
 const config = require("./config.json");
@@ -22,9 +22,6 @@ const botOnlyServers = config.checkServers;
 //Counters for stats, don't ask why
 var messagesCount = 0;
 var removedMessages = 0;
-
-//botIsKill is used to determine whether to reconnect the bot in case of a disconnection
-var botIsKill = false;
 
 
 process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
@@ -105,16 +102,6 @@ bot.on("ready", () => {
 	console.log('I am currently in ' + bot.guilds.array().length + ' server(s).');
 	bot.user.setStatus("online");
 	bot.user.setGame('/help to start');
-});
-
-bot.on('disconnect', function(){
-	console.log(Date() + ': Bot has been disconnected.');
-	if(botIsKill){
-		process.exit();
-	} else {
-		console.log(Date() + ': Attempting to reconnect...');
-		bot.login(auth.token);	
-	}
 });
 
 
