@@ -1,6 +1,7 @@
 const auth = require("./auth.json");
 const Discord = require("discord.js");
-const bot = new Discord.Client();
+const bot = new Discord.Client({autoReconnect: true});
+const fs = require('fs');
 
 //These users from config has access to everything. 
 const config = require("./config.json");
@@ -22,9 +23,7 @@ const botOnlyServers = config.checkServers;
 //Counters for stats, don't ask why
 var messagesCount = 0;
 var removedMessages = 0;
-
-//botIsKill is used to determine whether to reconnect the bot in case of a disconnection
-var botIsKill = false;
+var errLog = fs.createWriteStream('error.txt');
 
 
 process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
@@ -92,11 +91,11 @@ function spamFiltering(message){
 }
 
 bot.on('error', (error) =>{
-	console.log(error);
+	errLog.write(error);
 });
 
 bot.on('warn', (error) =>{
-	console.log(error);
+	errLog.write(error);
 });
 
 bot.on("ready", () => {
@@ -105,16 +104,6 @@ bot.on("ready", () => {
 	console.log('I am currently in ' + bot.guilds.array().length + ' server(s).');
 	bot.user.setStatus("online");
 	bot.user.setGame('/help to start');
-});
-
-bot.on('disconnect', function(){
-	console.log(Date() + ': Bot has been disconnected.');
-	if(botIsKill){
-		process.exit();
-	} else {
-		console.log(Date() + ': Attempting to reconnect...');
-		bot.login(auth.token);	
-	}
 });
 
 
@@ -241,6 +230,7 @@ bot.on('message', message => {
 					'/help - Show this message\n' +
 					'/ping - Pings the bot, useful for checking my status\n' +
 					'/say <text> - Prints something into text channel\n' +
+					'/stat - Prints stats of WaveBot\n' +
 					'***Admin Only ***\n' + 
 					'/clear - Clear all output from WaveBot in text channel\n' + 
 					'/clrcom - Clear all commands from users to WaveBot in text channel\n' + 
