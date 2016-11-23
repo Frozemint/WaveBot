@@ -1,6 +1,7 @@
 const auth = require("./auth.json");
 const Discord = require("discord.js");
 const bot = new Discord.Client({autoReconnect:true});
+const fs = require('fs');
 
 //These users from config has access to everything. 
 const config = require("./config.json");
@@ -22,6 +23,9 @@ const botOnlyServers = config.checkServers;
 //Counters for stats, don't ask why
 var messagesCount = 0;
 var removedMessages = 0;
+
+//Debug
+var errorLog = fs.createWriteStream('error.txt');
 
 
 process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
@@ -89,11 +93,11 @@ function spamFiltering(message){
 }
 
 bot.on('error', (error) =>{
-	console.log(error);
+	errorLog.write(error);
 });
 
 bot.on('warn', (error) =>{
-	console.log(error);
+	errorLog.write(error);
 });
 
 bot.on("ready", () => {
