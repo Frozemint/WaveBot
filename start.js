@@ -126,163 +126,172 @@ try {
 
 			//message.delete();
 
-			/* Commands */
-			switch (commandText[0].toLowerCase()) {
-				case "/ping":
-					//Ping the bot.
-					message.channel.sendMessage('*waves back*');
-					break;
+			try {
+				/* Commands */
+				switch (commandText[0].toLowerCase()) {
+					case "/ping":
+						//Ping the bot.
+						message.channel.sendMessage('*waves back*');
+						break;
 
-				case "/say":
-					//Bot prints argument to channel.
-					//Usage: /say <argument>
-					message.channel.sendMessage(message.content.substring(commandText[0].length+1)); 
-					break;
+					case "/say":
+						//Bot prints argument to channel.
+						//Usage: /say <argument>
+						message.channel.sendMessage(message.content.substring(commandText[0].length+1)); 
+						break;
 
-				case "/sayin":
-					//Announce text after set delay
-					//Usage: /sayin <Delay in mins> <Text to announce>
-					if (checkPermissions(message)){
-						var stringToPrint = message.content.substring(commandText[0].length + commandText[1].length + 2);
-						stringToPrint = stringToPrint.replace("\\",'');
-						setTimeout(function(){
-							message.channel.sendMessage(stringToPrint);
-						}, 1000 * 60 * commandText[1]);
-						console.log('Timer set.');
-					}
-					break;
-
-				case "/clear":
-					//Clear all messages from the bot.
-					//message.delete();
-					console.log(message.author.username + ' requested to clear bot messages.');
-					
-					if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-						message.channel.fetchMessages({limit: 100}).then(function (m){
-							filtered = m.filter(findMessage.bind(this));
-							try {
-									if (filtered.size >=2 ){
-										message.channel.bulkDelete(filtered);
-										message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
-									} else {
-										message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
-									}
-								} catch (e){
-									message.channel.sendMessage('Failed to delete message. Check console.');
-									console.log(Date() + '- Error output:' + e);
-								}
-							})
-					} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-						message.channel.sendMessage('Bot has no permission to manage messages.');
-					}
-					break;
-
-				case "/clrcom":
-					//Clear all command messages from users.
-					if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-						message.channel.fetchMessages({limit: 100}).then(function (m){
-							filtered = m.filter(findUserMessages.bind(this));
-							try {
-									if (filtered.size >=2 ){
-										message.channel.bulkDelete(filtered);
-										message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
-									} else {
-										message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
-									}
-								} catch (e){
-									message.channel.sendMessage('Failed to delete message. Check console.');
-									console.log(Date() + '- Error output:' + e);
-								}
-							})
-					} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-						message.channel.sendMessage('Bot has no permission to manage messages.');
-					}
-
-					break;
-
-				case "/antispam":
-					//Toggle anti-spam detection.
-					if (checkPermissions(message)){
-						if (antiSpam === true){
-							antiSpam = false;
-							message.channel.sendMessage('Admin: Bot Anti-spam is now toggled TO OFF.');
-						} else {
-							antiSpam = true;
-							message.channel.sendMessage('Admin: Bot Anti-spam is now toggled TO ON.');
+					case "/sayin":
+						//Announce text after set delay
+						//Usage: /sayin <Delay in mins> <Text to announce>
+						if (checkPermissions(message)){
+							var stringToPrint = message.content.substring(commandText[0].length + commandText[1].length + 2);
+							stringToPrint = stringToPrint.replace("\\",'');
+							setTimeout(function(){
+								message.channel.sendMessage(stringToPrint);
+							}, 1000 * 60 * commandText[1]);
+							console.log('Timer set.');
 						}
-					}
-					break;
+						break;
 
-				case "/exit":
-					//Exit the bot process.
-					if (checkPermissions(message)){
-						console.log(Date() + ': Shuting down bot by /exit command.');
-						sleep(0.1);
-						bot.destroy();
-						process.exit();
-					} else {
-						console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to shutdown the bot and was denied.');
-					}
-					break;
+					case "/clear":
+						//Clear all messages from the bot.
+						//message.delete();
+						console.log(message.author.username + ' requested to clear bot messages.');
+						
+						if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+							message.channel.fetchMessages({limit: 100}).then(function (m){
+								filtered = m.filter(findMessage.bind(this));
+								try {
+										if (filtered.size >=2 ){
+											message.channel.bulkDelete(filtered);
+											message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
+										} else {
+											message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
+										}
+									} catch (e){
+										message.channel.sendMessage('Failed to delete message. Check console.');
+										console.log(Date() + '- Error output:' + e);
+									}
+								})
+						} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+							message.channel.sendMessage('Bot has no permission to manage messages.');
+						}
+						break;
 
-				case "/help":
-					//Print to the user's DM so we don't spam server.
-					message.channel.sendMessage('Please check your direct message :D');
-					//I know. Don't ask why.
-					message.author.sendMessage('***Command List***\n' +
-						'/help - Show this message\n' +
-						'/ping - Pings the bot, useful for checking my status\n' +
-						'/say <text> - Prints something into text channel\n' +
-						'***Admin Only ***\n' + 
-						'/clear - Clear all output from WaveBot in text channel\n' + 
-						'/clrcom - Clear all commands from users to WaveBot in text channel\n' + 
-						'/clearall - Clear ALL bot outputs in a text channel, including WaveBot\n' +
-						'/antispam - Toggle antispam for automatically deleting bot outputs in non-bot channels\n' +
-						'/sayin <delay in mins> <text> - After delay, print text into text channel\n' +
-						'/exit - Exit this bot');
-					break;
+					case "/clrcom":
+						//Clear all command messages from users.
+						if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+							message.channel.fetchMessages({limit: 100}).then(function (m){
+								filtered = m.filter(findUserMessages.bind(this));
+								try {
+										if (filtered.size >=2 ){
+											message.channel.bulkDelete(filtered);
+											message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
+										} else {
+											message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
+										}
+									} catch (e){
+										message.channel.sendMessage('Failed to delete message. Check console.');
+										console.log(Date() + '- Error output:' + e);
+									}
+								})
+						} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
+							message.channel.sendMessage('Bot has no permission to manage messages.');
+						}
+
+						break;
+
+					case "/antispam":
+						//Toggle anti-spam detection.
+						if (checkPermissions(message)){
+							if (antiSpam === true){
+								antiSpam = false;
+								message.channel.sendMessage('Admin: Bot Anti-spam is now toggled TO OFF.');
+							} else {
+								antiSpam = true;
+								message.channel.sendMessage('Admin: Bot Anti-spam is now toggled TO ON.');
+							}
+						}
+						break;
+
+					case "/exit":
+						//Exit the bot process.
+						if (checkPermissions(message)){
+							console.log(Date() + ': Shuting down bot by /exit command.');
+							sleep(0.1);
+							bot.destroy();
+							process.exit();
+						} else {
+							console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to shutdown the bot and was denied.');
+						}
+						break;
+
+					case "/help":
+						//Print to the user's DM so we don't spam server.
+						message.channel.sendMessage('Please check your direct message :D');
+						//I know. Don't ask why.
+						message.author.sendMessage('***Command List***\n' +
+							'/help - Show this message\n' +
+							'/ping - Pings the bot, useful for checking my status\n' +
+							'/say <text> - Prints something into text channel\n' +
+							'***Admin Only ***\n' + 
+							'/clear - Clear all output from WaveBot in text channel\n' + 
+							'/clrcom - Clear all commands from users to WaveBot in text channel\n' + 
+							'/clearall - Clear ALL bot outputs in a text channel, including WaveBot\n' +
+							'/antispam - Toggle antispam for automatically deleting bot outputs in non-bot channels\n' +
+							'/sayin <delay in mins> <text> - After delay, print text into text channel\n' +
+							'/exit - Exit this bot');
+						break;
+						
+					case "/about":
+						//Prints the about me to a user's DM.
+						message.channel.sendMessage('Please check your direct messages :D');
+						message.author.sendMessage('Hi, \n' +
+							'I am made by <@114721723894595589> :D\n' +
+							"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
+							'Check out my source code here: https://github.com/Frozemint/WaveBot');
+						break;
+
 					
-				case "/about":
-					//Prints the about me to a user's DM.
-					message.channel.sendMessage('Please check your direct messages :D');
-					message.author.sendMessage('Hi, \n' +
-						'I am made by <@114721723894595589> :D\n' +
-						"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
-						'Check out my source code here: https://github.com/Frozemint/WaveBot');
-					break;
+					case "/stat":
+						message.channel.sendMessage('Currently logged in as: ' + bot.user.username + '\n' +
+							"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
+							"You are an admin: " + (config.allowedUsers.indexOf(message.author.id) > -1) +
+							"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
+						break;
 
-				
-				case "/stat":
-					message.channel.sendMessage('Currently logged in as: ' + bot.user.username + '\n' +
-						"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
-						"You are an admin: " + (config.allowedUsers.indexOf(message.author.id) > -1) +
-						"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
-					break;
+					case "/nuke":
+						if (commandText[1]){
+							//var target = bot.users.find('username', commandText[1].toString());
+							var target = message.guild.members.find('nickname', commandText[1].toString());
+							if (!target){ message.channel.sendMessage('Can\'t find a person named ' + commandText1[1].toString() + ' to nuke!');return;}
+							message.channel.sendMessage(target.toString());
+							message.channel.sendMessage(commandText[1].toString());
+						} else {
+							message.channel.sendMessage('You need to tell me who to nuke!');
+						}
 
-				case "/nuke":
-					if (commandText[1]){
-						//var target = bot.users.find('username', commandText[1].toString());
-						var target = message.guild.members.find('nickname', commandText[1].toString());
-						if (!target){ message.channel.sendMessage('Can\'t find a person named ' + commandText1[1].toString() + ' to nuke!');return;}
-						message.channel.sendMessage(target.toString());
-						message.channel.sendMessage(commandText[1].toString());
-					} else {
-						message.channel.sendMessage('You need to tell me who to nuke!');
-					}
+						break;
 
-					break;
-
-				
-				default:
-					//This section will run if we run all the comparing above and 
-					//none was found.
-					message.channel.sendMessage('Command not found. Try running /help?');
-					break;
+					
+					default:
+						//This section will run if we run all the comparing above and 
+						//none was found.
+						message.channel.sendMessage('Command not found. Try running /help?');
+						break;
+				}
+			} catch(e) { 
+				console.log(e.stack); 
+				process.exit();
 			}
+
 
 		}
 	});
 
 	//Login.
 	bot.login(auth.token);
-} catch(e) { console.log(e.stack); }
+} catch(e) { 
+	console.log(e.stack); 
+	process.exit();
+}
