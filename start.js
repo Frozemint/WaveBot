@@ -2,6 +2,7 @@ const auth = require("./auth.json");
 const Discord = require("discord.js");
 const bot = new Discord.Client({autoReconnect:true});
 const fs = require('fs');
+const util = require('util');
 
 //These users from config has access to everything. 
 const config = require("./config.json");
@@ -24,22 +25,22 @@ const botOnlyServers = config.checkServers;
 var messagesCount = 0;
 var removedMessages = 0;
 
-//Debug
-var errorLog = fs.createWriteStream('error.txt');
+//Set to log to error.log in root
+var errorLog = fs.createWriteStream('error.log', {flags: 'w'});
 
+//Override standard stdout and stderr (for writing error) to write to error.log
+process.stdout.write = process.stderr.write = errorLog.write.bind(errorLog);
 
-process.on('SIGINT', exitHandler.bind({reason: 'SIGINT'}));
-process.on('exit', exitHandler.bind({reason: 'Exiting.'}));
-process.on('SIGTERM', exitHandler.bind({reason: 'SIGKILL'}));
+//Exit handler. Destroy (logout) of discord first before exiting.
+process.on('exit', (reason) =>{
+	bot.destroy();
+	process.exit(0);
+});
 
-function exitHandler(reason){
-	//Exit handler for checking why the bot exits.
-	console.log('\n' + Date() + ': QUITTING. Reason: ' + this.reason);
-	bot.destroy().then(function(){
-		//Logs out of discord before exiting.
-  		process.exit();
-  });
-}
+//I honestly don't know why this works. Catch unhandled exceptions and write to ???
+process.on('uncaughtException', function(err) {
+  console.error((err && err.stack) ? err.stack : err);
+});
 
 function checkPermissions(message){
 	//This function checks the permission of a user against
@@ -91,14 +92,6 @@ function spamFiltering(message){
 	}
 	return false;
 }
-
-bot.on('error', (error) =>{
-	errorLog.write(error);
-});
-
-bot.on('warn', (error) =>{
-	errorLog.write(error);
-});
 
 bot.on("ready", () => {
 	//This is run when the bot is ready in discord.
@@ -218,7 +211,8 @@ bot.on('message', message => {
 				//Exit the bot process.
 				if (checkPermissions(message)){
 					console.log(Date() + ': Shuting down bot by /exit command.');
-					process.exit(0);
+					bot.destroy();
+					process.exit();
 				} else {
 					console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to shutdown the bot and was denied.');
 				}
@@ -262,7 +256,7 @@ bot.on('message', message => {
 				if (commandText[1]){
 					//var target = bot.users.find('username', commandText[1].toString());
 					var target = message.guild.members.find('nickname', commandText[1].toString());
-					if (!target){return;}
+					//if (!target){return;}
 					message.channel.sendMessage(target.toString());
 					message.channel.sendMessage(commandText[1].toString());
 				} else {
