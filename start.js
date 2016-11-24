@@ -282,7 +282,6 @@ try {
 				}
 			} catch(e) { 
 				console.log(e.stack); 
-				process.exit();
 			}
 
 
@@ -293,5 +292,4 @@ try {
 	bot.login(auth.token);
 } catch(e) { 
 	console.log(e.stack); 
-	process.exit();
 }
