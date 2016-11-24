@@ -29,8 +29,8 @@ var removedMessages = 0;
 var error_file = fs.createWriteStream(__dirname + '/error.log', {flags : 'w'});
 var error_stdout = process.stdout;
 console.log = function(log) { 
-  log_file.write(util.format(log) + '\n');
-  log_stdout.write(util.format(log) + '\n');
+  error_file.write(util.format(log) + '\n');
+  error_stdout.write(util.format(log) + '\n');
 };
 
 //Exit handler. Destroy (logout) of discord first before exiting.
