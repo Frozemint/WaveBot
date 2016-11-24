@@ -258,6 +258,19 @@ bot.on('message', message => {
 					"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
 				break;
 
+			case "/nuke":
+				if (commandText[1]){
+					//var target = bot.users.find('username', commandText[1].toString());
+					var target = message.guild.members.find('nickname', commandText[1].toString());
+					if (!target){return;}
+					message.channel.sendMessage(target.toString());
+					message.channel.sendMessage(commandText[1].toString());
+				} else {
+					message.channel.sendMessage('/nuke needs an argument!');
+				}
+
+				break;
+
 			
 			default:
 				//This section will run if we run all the comparing above and 
