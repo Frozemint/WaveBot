@@ -25,11 +25,13 @@ const botOnlyServers = config.checkServers;
 var messagesCount = 0;
 var removedMessages = 0;
 
-//Set to log to error.log in root
-var errorLog = fs.createWriteStream('error.log', {flags: 'w'});
-
-//Override standard stdout and stderr (for writing error) to write to error.log
-process.stdout.write = process.stderr.write = errorLog.write.bind(errorLog);
+//pipe console.log to a file
+var error_file = fs.createWriteStream(__dirname + '/error.log', {flags : 'w'});
+var error_stdout = process.stdout;
+console.log = function(log) { 
+  log_file.write(util.format(log) + '\n');
+  log_stdout.write(util.format(log) + '\n');
+};
 
 //Exit handler. Destroy (logout) of discord first before exiting.
 process.on('exit', (reason) =>{
