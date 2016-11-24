@@ -33,13 +33,16 @@ process.stdout.write = process.stderr.write = errorLog.write.bind(errorLog);
 
 //Exit handler. Destroy (logout) of discord first before exiting.
 process.on('exit', (reason) =>{
+	console.log(Date() + ': Exiting bot NOW.');
 	bot.destroy();
 	process.exit(0);
 });
 
 //I honestly don't know why this works. Catch unhandled exceptions and write to ???
 process.on('uncaughtException', function(err) {
-  console.error((err && err.stack) ? err.stack : err);
+	  console.log(Date() + ': Encountered an error and exiting NOW.');
+	  console.error((err && err.stack) ? err.stack : err);
+	  process.exit(1);
 });
 
 function checkPermissions(message){
@@ -211,6 +214,7 @@ bot.on('message', message => {
 				//Exit the bot process.
 				if (checkPermissions(message)){
 					console.log(Date() + ': Shuting down bot by /exit command.');
+					sleep(0.1);
 					bot.destroy();
 					process.exit();
 				} else {
@@ -256,11 +260,11 @@ bot.on('message', message => {
 				if (commandText[1]){
 					//var target = bot.users.find('username', commandText[1].toString());
 					var target = message.guild.members.find('nickname', commandText[1].toString());
-					//if (!target){return;}
+					if (!target){ message.channel.sendMessage('Can\'t find a person named ' + commandText1[1].toString() + ' to nuke!');return;}
 					message.channel.sendMessage(target.toString());
 					message.channel.sendMessage(commandText[1].toString());
 				} else {
-					message.channel.sendMessage('/nuke needs an argument!');
+					message.channel.sendMessage('You need to tell me who to nuke!');
 				}
 
 				break;
