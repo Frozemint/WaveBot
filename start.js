@@ -1,6 +1,6 @@
 const auth = require("./auth.json");
 const Discord = require("discord.js");
-const bot = new Discord.Client({autoReconnect:true});
+const bot = new Discord.Client();
 const fs = require('fs');
 
 //These users from config has access to everything. 
@@ -25,6 +25,8 @@ var messagesCount = 0;
 var removedMessages = 0;
 
 var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
+
+process.title = 'wavebot';
 
 //I honestly don't know why this works. Catch unhandled exceptions and write to ???
 process.on('uncaughtException', function(err) {
@@ -53,9 +55,9 @@ function antiSpamFunction(message){
 
 	//NOT IN botonlychannels, in servers to monitor
 	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
-		console.log(message.content.toLowerCase());
 		for (var i = 0; i < whiteListArray.length; i++){
 			if (message.content.toLowerCase().startsWith(whiteListArray[i])){
+				console.log('Message: ' + message.content.toString() + ' is in whitelist. Not removing.');
 				return false;
 			}
 		}
@@ -93,6 +95,12 @@ bot.on("ready", () => {
 	console.log('I am currently in ' + bot.guilds.array().length + ' server(s).');
 	bot.user.setStatus("online");
 	bot.user.setGame('/help to start');
+});
+
+bot.on('disconnect', function(error, errorCode){
+	console.log('------- Bot has disconnected from Discord. Code: ' + errorCode + '. Reason: ' + error);
+	bot.destroy();
+	bot.login(auth.token);
 });
 
 
@@ -205,8 +213,9 @@ bot.on('message', message => {
 				//Exit the bot process.
 				if (checkPermissions(message)){
 					console.log(Date() + ': Shuting down bot by /exit command.');
-					bot.destroy();
-					process.exit();
+					bot.destroy().then(function(){
+						process.exit();
+					});
 				} else {
 					console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to shutdown the bot and was denied.');
 				}
