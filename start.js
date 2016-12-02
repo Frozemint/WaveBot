@@ -1,6 +1,6 @@
 const auth = require("./auth.json");
 const Discord = require("discord.js");
-const bot = new Discord.Client();
+const bot = new Discord.Client({autoReconnect: true});
 const fs = require('fs');
 
 //These users from config has access to everything. 
@@ -89,7 +89,7 @@ function spamFiltering(message){
 	return false;
 }
 
-bot.on("ready", () => {
+bot.once("ready", () => {
 	//This is run when the bot is ready in discord.
 	console.log('Time is now: ' + Date());
 	console.log('I am currently in ' + bot.guilds.array().length + ' server(s).');
@@ -97,12 +97,14 @@ bot.on("ready", () => {
 	bot.user.setGame('/help to start');
 });
 
-bot.on('disconnect', function(error, errorCode){
-	console.log('------- Bot has disconnected from Discord. Code: ' + errorCode + '. Reason: ' + error);
-	bot.destroy();
-	bot.login(auth.token);
+bot.on('disconnect', function(){
+	console.log('------- Bot has disconnected from Discord. Time now: ' + Date());
 });
 
+bot.on('reconnecting', function(){
+	console.log(Date() + ': Attempting to reconnect...');
+	//bot.login(auth.token);
+});
 
 bot.on('message', message => {
 	messagesCount++;
