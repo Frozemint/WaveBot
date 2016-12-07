@@ -2,6 +2,7 @@ const auth = require("./auth.json");
 const Discord = require("discord.js");
 const bot = new Discord.Client({autoReconnect: true});
 const fs = require('fs');
+const util = require("util")
 
 //These users from config has access to everything. 
 const config = require("./config.json");
@@ -28,15 +29,23 @@ var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 
 process.title = 'wavebot';
 
+process.stdin.resume();
+
 //I honestly don't know why this works. Catch unhandled exceptions and write to ???
 process.on('uncaughtException', function(err) {
+	console.log('Uncaught exception at time: ' + Date());
 	bot.destroy();
 	errorLog.write((err && err.stack) ? err.stack : err);
 	errorLog.end('\nEnd of Error Log.\n');
   	errorLog.on('finish', function(){
-  		process.exit();
+  		process.exit(1);
   });
 });
+
+process.on('exit', function(code){
+	console.log('Bot process will exit with code: ' + code);
+	console.log('Bot process exiting at time: ' + Date());
+})
 
 function checkPermissions(message){
 	//This function checks the permission of a user against
@@ -128,7 +137,7 @@ bot.on('message', message => {
 		switch (commandText[0].toLowerCase()) {
 			case "/ping":
 				//Ping the bot.
-				message.channel.sendMessage('*waves back*');
+				eemessage.channel.sendMessage('*waves back*');
 				break;
 
 			case "/say":
@@ -216,7 +225,7 @@ bot.on('message', message => {
 				if (checkPermissions(message)){
 					console.log(Date() + ': Shuting down bot by /exit command.');
 					bot.destroy().then(function(){
-						process.exit();
+						process.exit(0);
 					});
 				} else {
 					console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to shutdown the bot and was denied.');
@@ -257,7 +266,21 @@ bot.on('message', message => {
 					"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
 				break;
 
-			case "/nuke":
+			case "/eval":
+				if (checkPermissions(message)){
+						try {
+						var code = message.content.substring(commandText[0].length+1);
+
+						message.channel.sendCode('xl', eval(code));
+					} catch (err){
+						message.channel.sendMessage('Encountered an error during eval: \n' + err);
+					}
+				}else {
+					console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to /eval and was denied.');
+				}
+				break;
+
+			/*case "/nuke":
 				if (commandText[1]){
 					var target = message.guild.members.find('nickname', commandText[1].toString());
 					if (!target){return;}
@@ -268,8 +291,7 @@ bot.on('message', message => {
 				}
 
 				break;
-
-			
+			*/
 			default:
 				//This section will run if we run all the comparing above and 
 				//none was found.
