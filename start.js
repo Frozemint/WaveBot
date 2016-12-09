@@ -7,7 +7,7 @@ const util = require("util")
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
