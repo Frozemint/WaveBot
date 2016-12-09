@@ -137,7 +137,7 @@ bot.on('message', message => {
 		switch (commandText[0].toLowerCase()) {
 			case "/ping":
 				//Ping the bot.
-				eemessage.channel.sendMessage('*waves back*');
+				message.channel.sendMessage('*waves back*');
 				break;
 
 			case "/say":
