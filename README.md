@@ -21,6 +21,7 @@ Tweak what channels to whitelist bot messages, and what servers to enforce antis
 - /antispam - Toggle antispam for automatically deleting bot outputs in non-bot channels.
 - /sayin [Delay in Minute] [Text] - After delay, writes [Text] to the text channel this command was typed in.
  * Note that \ characters are escaped, use them to prevent spamming @everyone by writing @\everyone
+- /eval [Javascript Code] - Execute arbitrary javascript code. USE WITH CAUTION.
 - /exit - Exits the bot.
 
 
