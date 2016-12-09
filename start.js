@@ -7,7 +7,7 @@ const util = require("util")
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
@@ -24,6 +24,8 @@ const botOnlyServers = config.checkServers;
 //Counters for stats, don't ask why
 var messagesCount = 0;
 var removedMessages = 0;
+
+var sleeping = false;
 
 var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 
@@ -123,15 +125,24 @@ bot.on('message', message => {
 		message.delete();
 		removedMessages++;
 	}
+	if (message.content === '/sleep' && checkPermissions(message)){
+		if (sleeping){
+			sleeping = false;
+			message.channel.sendMessage('Will listen for user commands again!');
+			return;
+		} else {
+			sleeping = true;
+			message.channel.sendMessage('Now ignoring user commands. Ignore this by running /sleep again.');
+			return;
+		}
+	}
 
-	if (message.content[0] === '/' && message.author.bot != true){ 
+	if (message.content[0] === '/' && message.author.bot != true && sleeping === false){ 
 	//if message starts with a /
 	//and make sure we're not replying to a bot (including ourselves)
 		console.log(Date() + ': ' + 'Treating message with content: "' + message.content + '" written by ' + message.author.username + ' as a command.');
 
 		var commandText = message.content.split(" "); //Sort command and arguments into array
-
-		//message.delete();
 
 		/* Commands */
 		switch (commandText[0].toLowerCase()) {
@@ -155,6 +166,7 @@ bot.on('message', message => {
 					setTimeout(function(){
 						message.channel.sendMessage(stringToPrint);
 					}, 1000 * 60 * commandText[1]);
+					message.channel.sendMessage('Will broadcast message: \'' + stringToPrint + '\' after ' + commandText[1] * 1000 * 60  + ' minutes');
 					console.log('Timer set.');
 				}
 				break;
