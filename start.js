@@ -154,6 +154,10 @@ bot.on('message', message => {
 			case "/say":
 				//Bot prints argument to channel.
 				//Usage: /say <argument>
+				if (!commandText[1]){
+					message.channel.sendMessage('/say needs an argument: tell me what to say.');
+					return;
+				}
 				message.channel.sendMessage(message.content.substring(commandText[0].length+1)); 
 				break;
 
