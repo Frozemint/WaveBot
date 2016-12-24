@@ -38,7 +38,7 @@ process.on('uncaughtException', function(err) {
 	console.log('Uncaught exception at time: ' + Date());
 	bot.destroy();
 	errorLog.write((err && err.stack) ? err.stack : err);
-	errorLog.end('\nEnd of Error Log.\n');
+	errorLog.end('\nEnd of Error Log at time' + Date() + '\n');
   	errorLog.on('finish', function(){
   		process.exit(1);
   });
@@ -170,7 +170,7 @@ bot.on('message', message => {
 					setTimeout(function(){
 						message.channel.sendMessage(stringToPrint);
 					}, 1000 * 60 * commandText[1]);
-					message.channel.sendMessage('Will broadcast message: \'' + stringToPrint + '\' after ' + commandText[1] * 1000 * 60  + ' minutes');
+					message.channel.sendMessage('Will broadcast message after ' + commandText[1] + ' minutes');
 					console.log('Timer set.');
 				}
 				break;
