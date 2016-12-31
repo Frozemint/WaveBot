@@ -7,7 +7,7 @@ const util = require("util")
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep', '/yes', '/no', '/results', '/poll'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
@@ -21,11 +21,17 @@ const botOnlyChannels = config.botChannel;
 //botOnlyServers is the list of servers that antispam should monitor.
 const botOnlyServers = config.checkServers;
 
-//Counters for stats, don't ask why
+//Counters for stats
 var messagesCount = 0;
 var removedMessages = 0;
 
+//var for /sleep command
 var sleeping = false;
+
+var universalSuffrage = false;
+var pollQuestion = "";
+var jaArray = [];
+var neinArray = [];
 
 var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 
@@ -296,18 +302,59 @@ bot.on('message', message => {
 				}
 				break;
 
-			/*case "/nuke":
-				if (commandText[1]){
-					var target = message.guild.members.find('nickname', commandText[1].toString());
-					if (!target){return;}
-					message.channel.sendMessage(target.toString());
-					message.channel.sendMessage(commandText[1].toString());
-				} else {
-					message.channel.sendMessage('/nuke needs an argument!');
+			case "/poll":
+				//Only admins can create polls and check if poll question exist
+				if (checkPermissions(message)){
+					if (universalSuffrage === false && commandText[0]){
+						pollQuestion = message.content.substring(commandText[0].length+1);
+						message.reply('Started a poll on: ' + pollQuestion);
+						universalSuffrage = true;
+					} else if (universalSuffrage === true) {
+						message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
+						message.channel.sendMessage('Final results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
+						neinArray = [];
+				jaArray = [];
+				pollQuestion = "";
+						universalSuffrage = false;
+					}
+				}
+				break;
+
+			case "/yes":
+				if (universalSuffrage === false){
+					return;
+				}
+				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1){
+					jaArray.push(message.author.id);
+					message.reply('You have successfully casted a YES vote on the question: ' + pollQuestion);
+					message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
+				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1){
+					message.reply('You have already voted!');
 				}
 
 				break;
-			*/
+
+			case "/no":
+				if (universalSuffrage === false){
+					return;
+				}
+				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1){
+					neinArray.push(message.author.id);
+					message.reply('You have successfully casted a NO vote on the question: ' + pollQuestion);
+					message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
+				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1){
+					message.reply('You have already voted!');
+				}
+				break;
+
+			case "/results":
+				if (universalSuffrage === false){
+					message.channel.sendMessage('There are currently no polls in progress.');
+					return;
+				}
+				message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
+				break;
+
 			default:
 				//This section will run if we run all the comparing above and 
 				//none was found.
