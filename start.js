@@ -7,7 +7,7 @@ const util = require("util")
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
@@ -24,6 +24,7 @@ const botOnlyServers = config.checkServers;
 //Counters for stats
 var messagesCount = 0;
 var removedMessages = 0;
+var commandCount = 0;
 
 //var for /sleep command
 var sleeping = false;
@@ -45,7 +46,7 @@ process.on('uncaughtException', function(err) {
 	console.log('Uncaught exception at time: ' + Date());
 	bot.destroy();
 	errorLog.write((err && err.stack) ? err.stack : err);
-	errorLog.end('\nEnd of Error Log at time' + Date() + '\n');
+	errorLog.end('\nEnd of Error Log at time ' + Date() + '\n');
   	errorLog.on('finish', function(){
   		process.exit(1);
   });
@@ -135,30 +136,29 @@ bot.on('message', message => {
 	if (message.content === '/sleep' && checkPermissions(message)){
 		if (sleeping){
 			sleeping = false;
-			message.channel.sendMessage('Will listen for user commands again!');
+			message.channel.sendMessage(':loud_sound: | Will listen for user commands again!');
 			return;
 		} else {
 			sleeping = true;
-			message.channel.sendMessage('Now ignoring user commands. Ignore this by running /sleep again.');
+			message.channel.sendMessage(' :mute: | Quiet mode is now active - I will not respond to use commands. End quiet mode by running /sleep again.');
 			return;
 		}
 	}
 
 	if (message.content[0] === '/' && message.author.bot != true && sleeping === false){ 
-	//if message starts with a /
-	//and make sure we're not replying to a bot (including ourselves)
+		//if message starts with a /
+		//and make sure we're not replying to a bot (including ourselves)
 		console.log(Date() + ': ' + 'Treating message with content: "' + message.content + '" written by ' + message.author.username + ' as a command.');
 
 		var commandText = message.content.split(" "); //Sort command and arguments into array
+
+		commandCount++;
 
 		/* Commands */
 		switch (commandText[0].toLowerCase()) {
 			case "/ping":
 				//Ping the bot.
 				message.channel.sendMessage('*waves back*');
-				if (message.member.roles.find('name', 'Bot Commander')){
-					message.reply('Hi Admin');
-				}
 				break;
 
 			case "/say":
@@ -180,7 +180,7 @@ bot.on('message', message => {
 					setTimeout(function(){
 						message.channel.sendMessage(stringToPrint);
 					}, 1000 * 60 * commandText[1]);
-					message.channel.sendMessage('Will broadcast message after ' + commandText[1] + ' minutes');
+					message.channel.sendMessage(' :timer: | You are all set! Message will be broadcasted after ' + commandText[1] + ' minutes.');
 					console.log('Timer set.');
 				}
 				break;
@@ -196,17 +196,17 @@ bot.on('message', message => {
 						try {
 								if (filtered.size >=2 ){
 									message.channel.bulkDelete(filtered);
-									message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
+									message.reply(' :white_check_mark: | I deleted ' + filtered.size + ' of my messages from this channel.');
 								} else {
-									message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
+									message.reply('Due to Discord limitations, you need to delete more than 1 of my messages at once.');
 								}
 							} catch (e){
-								message.channel.sendMessage('Failed to delete message. Check console.');
+								message.reply(':warning: | Failed to delete message. Check console.');
 								console.log(Date() + '- Error output:' + e);
 							}
 						})
 				} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-					message.channel.sendMessage('Bot has no permission to manage messages.');
+					message.channel.sendMessage(':warning: | Bot has no server permission (MANAGE_MESSAGES) to manage messages.');
 				}
 				break;
 
@@ -218,17 +218,17 @@ bot.on('message', message => {
 						try {
 								if (filtered.size >=2 ){
 									message.channel.bulkDelete(filtered);
-									message.channel.sendMessage('Deleted ' + filtered.size + ' messages.');
+									message.reply(' :white_check_mark: | I deleted ' + filtered.size + ' of commands from this channel.');
 								} else {
-									message.channel.sendMessage('Due to Discord limitations, you need to delete more than 2 bot output at once.');
+									message.reply('Due to Discord limitations, you need to delete more than 1 of my messages at once.');
 								}
 							} catch (e){
-								message.channel.sendMessage('Failed to delete message. Check console.');
+								message.channel.sendMessage(':warning: | Failed to delete message. Check console.');
 								console.log(Date() + '- Error output:' + e);
 							}
 						})
 				} else if (!message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
-					message.channel.sendMessage('Bot has no permission to manage messages.');
+					message.channel.sendMessage(':warning: | Bot has no server permission (MANAGE_MESSAGES) to manage messages.');
 				}
 
 				break;
@@ -238,10 +238,10 @@ bot.on('message', message => {
 				if (checkPermissions(message)){
 					if (antiSpam === true){
 						antiSpam = false;
-						message.channel.sendMessage('Admin: Bot Anti-spam is now toggled TO OFF.');
+						message.reply(':white_check_mark: | Bot Anti-spam is now toggled TO OFF.');
 					} else {
 						antiSpam = true;
-						message.channel.sendMessage('Admin: Bot Anti-spam is now toggled TO ON.');
+						message.channel.sendMessage(':white_check_mark: | Bot Anti-spam is now toggled TO ON.');
 					}
 				}
 				break;
@@ -294,17 +294,19 @@ bot.on('message', message => {
 
 			case "/eval":
 				if (checkPermissions(message)){
-						try {
+					try {
 						var code = message.content.substring(commandText[0].length+1);
 
-						message.channel.sendCode('xl', eval(code));
+						message.channel.sendCode('js', eval(code));
 					} catch (err){
 						message.channel.sendMessage('Encountered an error during eval: \n' + err);
 					}
-				}else {
+				} else {
 					console.log('User (name: ' + message.author.username + ' | ID: ' + message.author.id  + ') tried to /eval and was denied.');
 				}
 				break;
+
+			/* Poll code */
 
 			case "/poll":
 				//Only admins can create polls and check if poll question exist
@@ -312,8 +314,9 @@ bot.on('message', message => {
 					//universalSuffrage is false when there is no active polls
 					if (universalSuffrage === false && commandText[0]){
 						pollQuestion = message.content.substring(commandText[0].length+1);
-						message.reply('Started a poll on: ' + pollQuestion);
-						neinArray = [];
+						message.reply(' :mega: | Started a poll on: ' + pollQuestion);
+						message.channel.sendMessage('Vote with /vote <yes/no/abstain>!');
+						neinArray = []; //Clear previous poll results
 						jaArray = [];
 						absArray = [];
 						universalSuffrage = true;
@@ -346,7 +349,7 @@ bot.on('message', message => {
 							message.reply('Please specify your vote: Yes, No, or Abstain.');
 							return;
 					}
-					message.reply('You have successfully casted a '  + commandText[1].toUpperCase() + ' vote on the question: ' + pollQuestion);
+					message.reply(' :ballot_box_with_check: | You have successfully casted a '  + commandText[1].toUpperCase() + ' vote on the question: ' + pollQuestion);
 				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1 || absArray.indexOf(message.author.id) > -1){
 					message.reply('You have already voted once!');
 					break;
@@ -364,7 +367,7 @@ bot.on('message', message => {
 			default:
 				//This section will run if we run all the comparing above and 
 				//none was found.
-				message.channel.sendMessage('Command not found. Try running /help?');
+				message.channel.sendMessage('Command not found. Try running /help.');
 				break;
 		}
 
