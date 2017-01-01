@@ -7,7 +7,7 @@ const util = require("util")
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep', '/yes', '/no', '/results', '/poll'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/clearall', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
@@ -28,16 +28,17 @@ var removedMessages = 0;
 //var for /sleep command
 var sleeping = false;
 
+/* Variables for conducting polls */
 var universalSuffrage = false;
+var ausStyle = false;
 var pollQuestion = "";
 var jaArray = [];
 var neinArray = [];
+var absArray= [];
 
 var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 
 process.title = 'wavebot';
-
-process.stdin.resume();
 
 //I honestly don't know why this works. Catch unhandled exceptions and write to ???
 process.on('uncaughtException', function(err) {
@@ -58,7 +59,7 @@ process.on('exit', function(code){
 function checkPermissions(message){
 	//This function checks the permission of a user against
 	//the config.json array of trusted users.
-	if (config.allowedUsers.indexOf(message.author.id) > -1){
+	if (message.member.roles.find('name', 'Bot Commander') || message.author.id === '114721723894595589') {
 		console.log(Date() + ': User ' + message.author.username + ' is admin, running command.');
 		return true;
 	} else {
@@ -155,6 +156,9 @@ bot.on('message', message => {
 			case "/ping":
 				//Ping the bot.
 				message.channel.sendMessage('*waves back*');
+				if (message.member.roles.find('name', 'Bot Commander')){
+					message.reply('Hi Admin');
+				}
 				break;
 
 			case "/say":
@@ -305,54 +309,56 @@ bot.on('message', message => {
 			case "/poll":
 				//Only admins can create polls and check if poll question exist
 				if (checkPermissions(message)){
+					//universalSuffrage is false when there is no active polls
 					if (universalSuffrage === false && commandText[0]){
 						pollQuestion = message.content.substring(commandText[0].length+1);
 						message.reply('Started a poll on: ' + pollQuestion);
+						neinArray = [];
+						jaArray = [];
+						absArray = [];
 						universalSuffrage = true;
 					} else if (universalSuffrage === true) {
+						//Check if polls is running before closing it.
 						message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
-						message.channel.sendMessage('Final results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
-						neinArray = [];
-				jaArray = [];
-				pollQuestion = "";
+						message.channel.sendMessage('Final results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
 						universalSuffrage = false;
 					}
 				}
 				break;
 
-			case "/yes":
-				if (universalSuffrage === false){
+			case "/vote":
+				if (universalSuffrage === false){ //Check if there is a poll in progress.
+					message.reply('There are currently no polls in progress.');
 					return;
 				}
-				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1){
-					jaArray.push(message.author.id);
-					message.reply('You have successfully casted a YES vote on the question: ' + pollQuestion);
-					message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
-				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1){
-					message.reply('You have already voted!');
+				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1 && absArray.indexOf(message.author.id) === -1){
+					switch (commandText[1].toLowerCase()){
+						case "yes":
+							jaArray.push(message.author.id);
+							break;
+						case "no":
+							neinArray.push(message.author.id);
+							break;
+						case "abstain":
+							absArray.push(message.author.id);
+							break;
+						default:
+							message.reply('Please specify your vote: Yes, No, or Abstain.');
+							return;
+					}
+					message.reply('You have successfully casted a '  + commandText[1].toUpperCase() + ' vote on the question: ' + pollQuestion);
+				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1 || absArray.indexOf(message.author.id) > -1){
+					message.reply('You have already voted once!');
+					break;
 				}
-
-				break;
-
-			case "/no":
-				if (universalSuffrage === false){
-					return;
-				}
-				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1){
-					neinArray.push(message.author.id);
-					message.reply('You have successfully casted a NO vote on the question: ' + pollQuestion);
-					message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
-				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1){
-					message.reply('You have already voted!');
-				}
-				break;
+				//no BREAK statement as we always display results after a vote.
 
 			case "/results":
 				if (universalSuffrage === false){
 					message.channel.sendMessage('There are currently no polls in progress.');
 					return;
 				}
-				message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes');
+				message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
 				break;
 
 			default:
