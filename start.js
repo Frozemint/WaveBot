@@ -58,12 +58,12 @@ process.on('exit', function(code){
 })
 
 function checkPermissions(message){
-	//This function checks the permission of a user against
-	//the config.json array of trusted users.
 	if (message.member.roles.find('name', 'Bot Commander') || message.author.id === '114721723894595589') {
+		//Check if use has role "Bot Commander" tagged or if writer of bot is trying ot run command.
 		console.log(Date() + ': User ' + message.author.username + ' is admin, running command.');
 		return true;
 	} else {
+		//Log the incident if it's not an authorised user.
 		console.log('User ' + message.author.username + ' just attempted to run a admin only command and was denied.');
 		message.channel.sendMessage('You do not have permission to execute the said command, this incident will be reported.');
 		return false;
@@ -72,15 +72,19 @@ function checkPermissions(message){
 
 function antiSpamFunction(message){
 
-	//NOT IN botonlychannels, in servers to monitor
+	/* Check if writer of message is:
+	- A bot
+	- Message is written in servers we watch as specified in the config
+	- Message is NOT WRITTEN in whitelisted channels
+	- Message DOES NOT contain whitelisted words
+	- Message is NOT WRITTEN by WaveBot (ourselves)
+	- antiSpam feature is currently active (as it can be disabled by user commands)
+	*/
 	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
-		for (var i = 0; i < whiteListArray.length; i++){
-			if (message.content.toLowerCase().startsWith(whiteListArray[i])){
-				console.log('Message: ' + message.content.toString() + ' is in whitelist. Not removing.');
-				return false;
-			}
-		}
 		return true;
+	} else if (whiteListArray.indexOf(message.content.toLowerCase()) > -1){
+		console.log(Date() + ': Message \'' + message.content + '\' is whitelisted. Not removing.');
+		return false;
 	} else {
 		return false;
 	}
@@ -110,6 +114,7 @@ function spamFiltering(message){
 
 bot.once("ready", () => {
 	//This is run when the bot is ready in discord.
+	//We use once to avoid many instances of the bot.
 	console.log('Time is now: ' + Date());
 	console.log('I am currently in ' + bot.guilds.array().length + ' server(s).');
 	bot.user.setStatus("online");
@@ -117,12 +122,13 @@ bot.once("ready", () => {
 });
 
 bot.on('disconnect', function(){
+	//This code is run when bot is disconnected
 	console.log('------- Bot has disconnected from Discord. Time now: ' + Date());
 });
 
 bot.on('reconnecting', function(){
+	//This code is run when bot is reconnecting
 	console.log(Date() + ': Attempting to reconnect...');
-	//bot.login(auth.token);
 });
 
 bot.on('message', message => {
@@ -134,6 +140,7 @@ bot.on('message', message => {
 		removedMessages++;
 	}
 	if (message.content === '/sleep' && checkPermissions(message)){
+		// /sleep is a special case and is nested outside giant command loop.
 		if (sleeping){
 			sleeping = false;
 			message.channel.sendMessage(':loud_sound: | Will listen for user commands again!');
@@ -152,12 +159,12 @@ bot.on('message', message => {
 
 		var commandText = message.content.split(" "); //Sort command and arguments into array
 
-		commandCount++;
+		commandCount++; //Increase command counter
 
 		/* Commands */
 		switch (commandText[0].toLowerCase()) {
 			case "/ping":
-				//Ping the bot.
+				//Bot reply to /ping messages. Useful for checking uptimes.
 				message.channel.sendMessage('*waves back*');
 				break;
 
@@ -187,7 +194,7 @@ bot.on('message', message => {
 
 			case "/clear":
 				//Clear all messages from the bot.
-				//message.delete();
+				message.delete();
 				console.log(message.author.username + ' requested to clear bot messages.');
 				
 				if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
@@ -286,6 +293,7 @@ bot.on('message', message => {
 
 			
 			case "/stat":
+				//View bot stats
 				message.channel.sendMessage('Currently logged in as: ' + bot.user.username + '\n' +
 					"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
 					"You are an admin: " + (config.allowedUsers.indexOf(message.author.id) > -1) +
@@ -294,6 +302,7 @@ bot.on('message', message => {
 				break;
 
 			case "/eval":
+				// /eval runs arbitary javascript code.
 				if (checkPermissions(message)){
 					try {
 						var code = message.content.substring(commandText[0].length+1);
