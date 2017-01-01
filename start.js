@@ -290,6 +290,7 @@ bot.on('message', message => {
 					"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
 					"You are an admin: " + (config.allowedUsers.indexOf(message.author.id) > -1) +
 					"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
+				message.channel.sendCode('js', '')
 				break;
 
 			case "/eval":
@@ -314,8 +315,7 @@ bot.on('message', message => {
 					//universalSuffrage is false when there is no active polls
 					if (universalSuffrage === false && commandText[0]){
 						pollQuestion = message.content.substring(commandText[0].length+1);
-						message.reply(' :mega: | Started a poll on: ' + pollQuestion);
-						message.channel.sendMessage('Vote with /vote <yes/no/abstain>!');
+						message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <yes/no/abstain>!');
 						neinArray = []; //Clear previous poll results
 						jaArray = [];
 						absArray = [];
@@ -323,7 +323,10 @@ bot.on('message', message => {
 					} else if (universalSuffrage === true) {
 						//Check if polls is running before closing it.
 						message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
-						message.channel.sendMessage('Final results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
+						message.channel.sendCode('asciidoc', `= FINAL VOTING RESULTS ON: ${pollQuestion} =
+• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
+• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
+• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)`);
 						universalSuffrage = false;
 					}
 				}
@@ -361,7 +364,11 @@ bot.on('message', message => {
 					message.channel.sendMessage('There are currently no polls in progress.');
 					return;
 				}
-				message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
+				//message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
+				message.channel.sendCode('asciidoc', `= VOTING RESULTS ON: ${pollQuestion} =
+• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
+• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
+• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)`);
 				break;
 
 			default:
