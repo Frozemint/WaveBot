@@ -7,7 +7,7 @@ const util = require("util")
 //These users from config has access to everything. 
 const config = require("./config.json");
 //CommandArray is used for /clrcom
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/stat', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
 
 //passiveClear reads the DEFAULT VALUE from config.json to see
 //if we activate antispam on startup.
@@ -82,6 +82,7 @@ function antiSpamFunction(message){
 	- Message DOES NOT contain whitelisted words
 	- Message is NOT WRITTEN by WaveBot (ourselves)
 	- antiSpam feature is currently active (as it can be disabled by user commands)
+
 	Message removal is not executed if the checks above are failed at any point.
 	*/
 	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
@@ -208,6 +209,7 @@ bot.on('message', message => {
 								if (filtered.size >=2 ){
 									message.channel.bulkDelete(filtered);
 									message.reply(' :white_check_mark: | I deleted ' + filtered.size + ' of my messages from this channel.');
+									removedMessages += filtered.size;
 								} else {
 									message.reply('Due to Discord limitations, you need to delete more than 1 of my messages at once.');
 								}
@@ -230,6 +232,7 @@ bot.on('message', message => {
 								if (filtered.size >=2 ){
 									message.channel.bulkDelete(filtered);
 									message.reply(' :white_check_mark: | I deleted ' + filtered.size + ' of commands from this channel.');
+									removedMessages += filtered.size;
 								} else {
 									message.reply('Due to Discord limitations, you need to delete more than 1 of my messages at once.');
 								}
@@ -288,21 +291,22 @@ bot.on('message', message => {
 				
 			case "/about":
 				//Prints the about me to a user's DM.
-				message.channel.sendMessage('Please check your direct messages :D');
-				message.author.sendMessage('Hi, \n' +
+				message.reply('Hi, \n' +
 					'I am made by <@114721723894595589> :D\n' +
 					"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
 					'Check out my source code here: https://github.com/Frozemint/WaveBot');
 				break;
 
 			
-			case "/stat":
+			case "/info":
 				//View bot stats
-				message.channel.sendMessage('Currently logged in as: ' + bot.user.username + '\n' +
-					"I am up for: " + (Math.round(bot.uptime / (1000 * 60 * 60))) + " hours, " + (Math.round(bot.uptime / (1000 * 60)) % 60) + " minutes, and " + (Math.round(bot.uptime / 1000) % 60) + " seconds.\n" +
-					"You are an admin: " + (config.allowedUsers.indexOf(message.author.id) > -1) +
-					"\nCurrently tracked " + messagesCount + " messages, in which " + removedMessages + " were flagged and deleted.");
-				message.channel.sendCode('js', '')
+				message.reply(`Information on WaveBot:\n` + `\`\`\`Logged in as     : ${bot.user.username}
+Discord uptime   : ${Math.round(bot.uptime / (1000 * 60 * 60 * 24))} days ${Math.round(bot.uptime / (1000 * 60 * 60))} hours ${Math.round(bot.uptime / (1000 * 60))% 60} minutes ${Math.round(bot.uptime / 1000) % 60} seconds
+Process uptime   : ${Math.round(process.uptime() / (60 * 60 * 24))} days ${Math.round(process.uptime() / (60 * 60))} hours ${Math.round(process.uptime() / 60)% 60} minutes ${Math.round(process.uptime() % 60)} seconds
+Messages tracked : ${messagesCount}
+Removed messages : ${removedMessages}
+Commands ran     : ${commandCount}
+You are admin    : ${(checkPermissions(message))}\`\`\``);
 				break;
 
 			case "/eval":
@@ -397,7 +401,7 @@ bot.on('message', message => {
 
 			default:
 				//This section will run if we run all the comparing above and 
-				//none was found.
+				//none was found; i.e the user probably typed an non existent command.
 				message.channel.sendMessage('Command not found. Try running /help.');
 				break;
 		}
