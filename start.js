@@ -31,11 +31,14 @@ var sleeping = false;
 
 /* Variables for conducting polls */
 var universalSuffrage = false;
-var ausStyle = false;
+var pollChannelID = '';
 var pollQuestion = "";
 var jaArray = [];
 var neinArray = [];
 var absArray= [];
+var jaNameArray = [];
+var neinNameArray = [];
+var absNameArray = [];
 
 var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 
@@ -65,7 +68,7 @@ function checkPermissions(message){
 	} else {
 		//Log the incident if it's not an authorised user.
 		console.log('User ' + message.author.username + ' just attempted to run a admin only command and was denied.');
-		message.channel.sendMessage('You do not have permission to execute the said command, this incident will be reported.');
+		message.channel.sendMessage(':no_entry_sign: | You do not have permission to execute the said command, this incident will be reported.');
 		return false;
 	}
 }
@@ -79,6 +82,7 @@ function antiSpamFunction(message){
 	- Message DOES NOT contain whitelisted words
 	- Message is NOT WRITTEN by WaveBot (ourselves)
 	- antiSpam feature is currently active (as it can be disabled by user commands)
+	Message removal is not executed if the checks above are failed at any point.
 	*/
 	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
 		return true;
@@ -91,7 +95,7 @@ function antiSpamFunction(message){
 }
 
 function findMessage(message){
-	if (bot.user === message.author) {return true;}
+	return (bot.user === message.author);
 }
 
 function findUserMessages(message){
@@ -328,14 +332,18 @@ bot.on('message', message => {
 						neinArray = []; //Clear previous poll results
 						jaArray = [];
 						absArray = [];
+						neinNameArray = [];
+						jaNameArray = [];
+						absNameArray = [];
 						universalSuffrage = true;
+						pollChannelID = message.channel.id;
 					} else if (universalSuffrage === true) {
 						//Check if polls is running before closing it.
 						message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
 						message.channel.sendCode('asciidoc', `= FINAL VOTING RESULTS ON: ${pollQuestion} =
-• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
-• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
-• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)`);
+• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${jaNameArray}]
+• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${neinNameArray}]
+• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${absNameArray}]`);
 						universalSuffrage = false;
 					}
 				}
@@ -346,16 +354,23 @@ bot.on('message', message => {
 					message.reply('There are currently no polls in progress.');
 					return;
 				}
+				if (message.channel.id != pollChannelID){
+					message.reply(' :no_entry_sign: | Please vote in the text channel where the poll is being hosted.');
+					return;
+				}
 				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1 && absArray.indexOf(message.author.id) === -1){
 					switch (commandText[1].toLowerCase()){
 						case "yes":
 							jaArray.push(message.author.id);
+							jaNameArray.push(message.author.username + '#' + message.author.discriminator);
 							break;
 						case "no":
 							neinArray.push(message.author.id);
+							neinNameArray.push(message.author.username + '#' + message.author.discriminator);
 							break;
 						case "abstain":
 							absArray.push(message.author.id);
+							absNameArray.push(message.author.username + '#' + message.author.discriminator);
 							break;
 						default:
 							message.reply('Please specify your vote: Yes, No, or Abstain.');
@@ -363,7 +378,7 @@ bot.on('message', message => {
 					}
 					message.reply(' :ballot_box_with_check: | You have successfully casted a '  + commandText[1].toUpperCase() + ' vote on the question: ' + pollQuestion);
 				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1 || absArray.indexOf(message.author.id) > -1){
-					message.reply('You have already voted once!');
+					message.reply(' :no_entry_sign: | You have already voted once!');
 					break;
 				}
 				//no BREAK statement as we always display results after a vote.
@@ -375,9 +390,9 @@ bot.on('message', message => {
 				}
 				//message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
 				message.channel.sendCode('asciidoc', `= VOTING RESULTS ON: ${pollQuestion} =
-• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
-• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)
-• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%)`);
+• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${jaNameArray}]
+• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${neinNameArray}]
+• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${absNameArray}]`);
 				break;
 
 			default:
