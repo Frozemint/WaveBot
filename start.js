@@ -345,9 +345,12 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 						//Check if polls is running before closing it.
 						message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
 						message.channel.sendCode('asciidoc', `= FINAL VOTING RESULTS ON: ${pollQuestion} =
-• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${jaNameArray}]
-• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${neinNameArray}]
-• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${absNameArray}]`);
+• Yes      :: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+  • Voters :: [${jaNameArray}]
+• No       :: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+  • Voters :: [${neinNameArray}]
+• Abstain  :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+  • Voters :: [${absNameArray}]`);
 						universalSuffrage = false;
 					}
 				}
@@ -394,9 +397,9 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 				}
 				//message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
 				message.channel.sendCode('asciidoc', `= VOTING RESULTS ON: ${pollQuestion} =
-• Yes     :: ${jaArray.length} votes (${(jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${jaNameArray}]
-• No      :: ${neinArray.length} votes (${(neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${neinNameArray}]
-• Abstain :: ${absArray.length} votes (${(absArray.length/(jaArray.length+neinArray.length+absArray.length))*100}%) [${absNameArray}]`);
+• Yes     :: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• No      :: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• Abstain :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)`);
 				break;
 
 			default:
