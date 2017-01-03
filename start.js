@@ -315,7 +315,7 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 					try {
 						var code = message.content.substring(commandText[0].length+1);
 
-						message.channel.sendCode('js', eval(code));
+						message.channel.sendCode('xl', eval(code));
 					} catch (err){
 						message.channel.sendMessage('Encountered an error during eval: \n' + err);
 					}
@@ -344,13 +344,13 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 					} else if (universalSuffrage === true) {
 						//Check if polls is running before closing it.
 						message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
-						message.channel.sendCode('asciidoc', `= FINAL VOTING RESULTS ON: ${pollQuestion} =
-• Yes      :: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-  • Voters :: [${jaNameArray}]
-• No       :: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-  • Voters :: [${neinNameArray}]
-• Abstain  :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-  • Voters :: [${absNameArray}]`);
+						message.channel.sendCode('asciidoc', `FINAL VOTING RESULTS ON: ${pollQuestion}\n
+• Yes            :: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• Yes Voters     :: ${jaNameArray.toString()}
+• No             :: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• No Voters      :: ${neinNameArray.toString()}
+• Abstain        :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• Abstain Voters :: ${absNameArray.toString()}`);
 						universalSuffrage = false;
 					}
 				}
@@ -369,15 +369,15 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 					switch (commandText[1].toLowerCase()){
 						case "yes":
 							jaArray.push(message.author.id);
-							jaNameArray.push(message.author.username + '#' + message.author.discriminator);
+							jaNameArray.push(message.author.username);
 							break;
 						case "no":
 							neinArray.push(message.author.id);
-							neinNameArray.push(message.author.username + '#' + message.author.discriminator);
+							neinNameArray.push(message.author.username);
 							break;
 						case "abstain":
 							absArray.push(message.author.id);
-							absNameArray.push(message.author.username + '#' + message.author.discriminator);
+							absNameArray.push(message.author.username);
 							break;
 						default:
 							message.reply('Please specify your vote: Yes, No, or Abstain.');
@@ -396,10 +396,10 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 					return;
 				}
 				//message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
-				message.channel.sendCode('asciidoc', `= VOTING RESULTS ON: ${pollQuestion} =
+				message.channel.sendMessage(`Voting results on ${pollQuestion}:\n` + `\`\`\`Markdown
 • Yes     :: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
 • No      :: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• Abstain :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)`);
+• Abstain :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)\`\`\``);
 				break;
 
 			default:
