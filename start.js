@@ -39,6 +39,7 @@ var absArray= [];
 var jaNameArray = [];
 var neinNameArray = [];
 var absNameArray = [];
+var optionArray = [];
 
 var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 
@@ -86,6 +87,7 @@ function antiSpamFunction(message){
 	Message removal is not executed if the checks above are failed at any point.
 	*/
 	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
+		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
 		return true;
 	} else if (whiteListArray.indexOf(message.content.toLowerCase()) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' is whitelisted. Not removing.');
@@ -102,15 +104,6 @@ function findMessage(message){
 function findUserMessages(message){
 	for (var i = 0; i < commandArray.length; i++){
 		if (message.content.toLowerCase().startsWith(commandArray[i])){
-			return true;
-		}
-	}
-	return false;
-}
-
-function spamFiltering(message){
-	for (var i = 0; i < whiteListArray.length; i++){
-		if (message.content.toLowerCase().startsWith(whiteListArray[i])){
 			return true;
 		}
 	}
@@ -142,6 +135,7 @@ bot.on('message', message => {
 	//originates from a bot, and will be removed.
 	if (antiSpamFunction(message) === true){ 
 		message.delete();
+
 		removedMessages++;
 	}
 	if (message.content === '/sleep' && checkPermissions(message)){
@@ -177,7 +171,7 @@ bot.on('message', message => {
 				//Bot prints argument to channel.
 				//Usage: /say <argument>
 				if (!commandText[1]){
-					message.channel.sendMessage('/say needs an argument: tell me what to say.');
+					message.channel.sendMessage(':warning: | /say needs an argument: tell me what to say.');
 					return;
 				}
 				message.channel.sendMessage(message.content.substring(commandText[0].length+1)); 
@@ -211,7 +205,7 @@ bot.on('message', message => {
 									message.reply(' :white_check_mark: | I deleted ' + filtered.size + ' of my messages from this channel.');
 									removedMessages += filtered.size;
 								} else {
-									message.reply('Due to Discord limitations, you need to delete more than 1 of my messages at once.');
+									message.reply(':warning: | Due to Discord limitations, you need to delete more than 1 of my messages at once.');
 								}
 							} catch (e){
 								message.reply(':warning: | Failed to delete message. Check console.');
@@ -234,7 +228,7 @@ bot.on('message', message => {
 									message.reply(' :white_check_mark: | I deleted ' + filtered.size + ' of commands from this channel.');
 									removedMessages += filtered.size;
 								} else {
-									message.reply('Due to Discord limitations, you need to delete more than 1 of my messages at once.');
+									message.reply(':warning: | Due to Discord limitations, you need to delete more than 1 of my messages at once.');
 								}
 							} catch (e){
 								message.channel.sendMessage(':warning: | Failed to delete message. Check console.');
@@ -305,8 +299,7 @@ Discord uptime   : ${Math.round(bot.uptime / (1000 * 60 * 60 * 24))} days ${Math
 Process uptime   : ${Math.round(process.uptime() / (60 * 60 * 24))} days ${Math.round(process.uptime() / (60 * 60))} hours ${Math.round(process.uptime() / 60)% 60} minutes ${Math.round(process.uptime() % 60)} seconds
 Messages tracked : ${messagesCount}
 Removed messages : ${removedMessages}
-Commands ran     : ${commandCount}
-You are admin    : ${(checkPermissions(message))}\`\`\``);
+Commands ran     : ${commandCount}\`\`\``);
 				break;
 
 			case "/eval":
@@ -328,33 +321,69 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 
 			case "/poll":
 				//Only admins can create polls and check if poll question exist
-				if (checkPermissions(message)){
-					//universalSuffrage is false when there is no active polls
-					if (universalSuffrage === false && commandText[0]){
+				if (!checkPermissions(message)) {return;}
+				if (!commandText[1]) {message.reply(' :warning: | Try /poll <question/options/default/start/end> [option1] [option2] [option3]'); return;}
+
+				switch (commandText[1].toLowerCase()){
+					case "question":
 						pollQuestion = message.content.substring(commandText[0].length+1);
-						message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <yes/no/abstain>!');
-						neinArray = []; //Clear previous poll results
-						jaArray = [];
-						absArray = [];
-						neinNameArray = [];
-						jaNameArray = [];
-						absNameArray = [];
-						universalSuffrage = true;
-						pollChannelID = message.channel.id;
-					} else if (universalSuffrage === true) {
-						//Check if polls is running before closing it.
-						message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
-						message.channel.sendCode('asciidoc', `FINAL VOTING RESULTS ON: ${pollQuestion}\n
-• Yes            :: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• Yes Voters     :: ${jaNameArray.toString()}
-• No             :: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• No Voters      :: ${neinNameArray.toString()}
-• Abstain        :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• Abstain Voters :: ${absNameArray.toString()}`);
-						universalSuffrage = false;
-					}
+						message.reply(':white_check_mark: | Poll question set to: ' + pollQuestion + '.');
+						break;
+					case "options":
+						if (!commandText[3] || 3 >= commandText.length){
+							message.reply(':warning: | You must specify at least 2 options and no more than 3 options.');
+							return;
+						}
+						optionArray = commandText.slice(2, commandText.length);
+						optionArray.push('');
+						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray);
+						break;
+					case "default":
+						optionArray = ['Yes', 'No', ''];
+						pollQuestion = 'Placeholder question';
+						message.reply(':white_check_mark: | Default options and question loaded.');
+						break;
+
+					case "start":
+						if (universalSuffrage === false && optionArray.length >= 2 && pollQuestion.length > 0){ //If there is no poll in progress
+							pollQuestion = message.content.substring(commandText[0].length+1);
+							message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <' + optionArray + '>!');
+							neinArray = []; //Clear previous poll results
+							jaArray = [];
+							absArray = [];
+							neinNameArray = [];
+							jaNameArray = [];
+							absNameArray = [];
+							universalSuffrage = true;
+							pollChannelID = message.channel.id;
+						} else if (universalSuffrage === true){
+							message.reply(':warning: | A poll is already in progress!');
+						} else if (optionArray.length < 2){
+							message.reply(' :warning: | You need to specify the options of the poll!');
+						} else if (question.length === 0 ){
+							message.reply(' :warning: | You need to specify the question of the poll!');
+						}
+						break;
+					case "end":
+						if (universalSuffrage === true){ //Check if polls is running before closing it.
+							message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
+							message.channel.sendCode('asciidoc', `FINAL VOTING RESULTS ON: ${pollQuestion}\n
+	• ${optionArray[0]}:: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+	• ${optionArray[0]} Voters:: ${jaNameArray.toString()}
+	• ${optionArray[1]}:: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+	• ${optionArray[1]} Voters:: ${neinNameArray.toString()}
+	• ${optionArray[2]}:: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+	• ${optionArray[2]} Voters:: ${absNameArray.toString()}`);
+							universalSuffrage = false;
+						} else if (universalSuffrage === false){
+							message.reply(':warning: | There is no poll currently running!');
+						}
+						break;
+					default:
+						message.reply('Try /poll <question/options/start/end> [option1] [option2] [option3]');
+						return;
 				}
-				break;
+				break; //break out of the giant command switch block.
 
 			case "/vote":
 				if (universalSuffrage === false){ //Check if there is a poll in progress.
@@ -365,25 +394,32 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 					message.reply(' :no_entry_sign: | Please vote in the text channel where the poll is being hosted.');
 					return;
 				}
+				if (!commandText[1]){
+					message.reply('Your options in this poll are: ' + optionArray);
+					return;
+				}
+
 				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1 && absArray.indexOf(message.author.id) === -1){
 					switch (commandText[1].toLowerCase()){
-						case "yes":
+						case optionArray[0]:
 							jaArray.push(message.author.id);
 							jaNameArray.push(message.author.username);
 							break;
-						case "no":
+						case optionArray[1]:
 							neinArray.push(message.author.id);
 							neinNameArray.push(message.author.username);
 							break;
-						case "abstain":
-							absArray.push(message.author.id);
-							absNameArray.push(message.author.username);
-							break;
+						case optionArray[2]:
+							if (optionArray[2]!=''){
+								absArray.push(message.author.id);
+								absNameArray.push(message.author.username);
+								break;
+							}
 						default:
-							message.reply('Please specify your vote: Yes, No, or Abstain.');
+							message.reply('Your options in this poll are: ' + optionArray);
 							return;
 					}
-					message.reply(' :ballot_box_with_check: | You have successfully casted a '  + commandText[1].toUpperCase() + ' vote on the question: ' + pollQuestion);
+					message.reply(' :ballot_box_with_check: | Your vote has been recorded.');
 				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1 || absArray.indexOf(message.author.id) > -1){
 					message.reply(' :no_entry_sign: | You have already voted once!');
 					break;
@@ -392,14 +428,14 @@ You are admin    : ${(checkPermissions(message))}\`\`\``);
 
 			case "/results":
 				if (universalSuffrage === false){
-					message.channel.sendMessage('There are currently no polls in progress.');
+					message.channel.sendMessage(':warning: | There are currently no polls in progress.');
 					return;
 				}
 				//message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
 				message.channel.sendMessage(`Voting results on ${pollQuestion}:\n` + `\`\`\`Markdown
-• Yes     :: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• No      :: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• Abstain :: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)\`\`\``);
+• ${optionArray[0]}:: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• ${optionArray[1]}:: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• ${optionArray[2]}:: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)\`\`\``);
 				break;
 
 			default:
