@@ -295,8 +295,8 @@ bot.on('message', message => {
 			case "/info":
 				//View bot stats
 				message.reply(`Information on WaveBot:\n` + `\`\`\`Logged in as     : ${bot.user.username}
-Discord uptime   : ${Math.round(bot.uptime / (1000 * 60 * 60 * 24))} days ${Math.round(bot.uptime / (1000 * 60 * 60))} hours ${Math.round(bot.uptime / (1000 * 60))% 60} minutes ${Math.round(bot.uptime / 1000) % 60} seconds
-Process uptime   : ${Math.round(process.uptime() / (60 * 60 * 24))} days ${Math.round(process.uptime() / (60 * 60))} hours ${Math.round(process.uptime() / 60)% 60} minutes ${Math.round(process.uptime() % 60)} seconds
+Discord uptime   : ${Math.floor(bot.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(bot.uptime / (1000 * 60 * 60))} hours ${Math.floor(bot.uptime / (1000 * 60))% 60} minutes ${Math.floor(bot.uptime / 1000) % 60} seconds
+Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.floor(process.uptime() / (60 * 60))} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
 Messages tracked : ${messagesCount}
 Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``);
@@ -326,28 +326,26 @@ Commands ran     : ${commandCount}\`\`\``);
 
 				switch (commandText[1].toLowerCase()){
 					case "question":
-						pollQuestion = message.content.substring(commandText[0].length+1);
+						pollQuestion = message.content.substring(commandText[0].length+commandText[1].length+1);
 						message.reply(':white_check_mark: | Poll question set to: ' + pollQuestion + '.');
 						break;
 					case "options":
-						if (!commandText[3] || 3 >= commandText.length){
+						if (!commandText[3] || 3 >= commandText.length || commandText.length > 5){
 							message.reply(':warning: | You must specify at least 2 options and no more than 3 options.');
 							return;
 						}
 						optionArray = commandText.slice(2, commandText.length);
-						optionArray.push('');
-						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray);
+						//optionArray.push('');
+						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray.join('|'));
 						break;
 					case "default":
 						optionArray = ['Yes', 'No', ''];
 						pollQuestion = 'Placeholder question';
 						message.reply(':white_check_mark: | Default options and question loaded.');
-						break;
 
 					case "start":
 						if (universalSuffrage === false && optionArray.length >= 2 && pollQuestion.length > 0){ //If there is no poll in progress
-							pollQuestion = message.content.substring(commandText[0].length+1);
-							message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <' + optionArray + '>!');
+							message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <' + optionArray.join('|') + '>!');
 							neinArray = []; //Clear previous poll results
 							jaArray = [];
 							absArray = [];
@@ -368,12 +366,12 @@ Commands ran     : ${commandCount}\`\`\``);
 						if (universalSuffrage === true){ //Check if polls is running before closing it.
 							message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
 							message.channel.sendCode('asciidoc', `FINAL VOTING RESULTS ON: ${pollQuestion}\n
-	• ${optionArray[0]}:: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-	• ${optionArray[0]} Voters:: ${jaNameArray.toString()}
-	• ${optionArray[1]}:: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-	• ${optionArray[1]} Voters:: ${neinNameArray.toString()}
-	• ${optionArray[2]}:: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-	• ${optionArray[2]} Voters:: ${absNameArray.toString()}`);
+• ${optionArray[0]}:: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• ${optionArray[0]} Voters:: ${jaNameArray.toString()}
+• ${optionArray[1]}:: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• ${optionArray[1]} Voters:: ${neinNameArray.toString()}
+• ${optionArray[2]}:: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
+• ${optionArray[2]} Voters:: ${absNameArray.toString()}`);
 							universalSuffrage = false;
 						} else if (universalSuffrage === false){
 							message.reply(':warning: | There is no poll currently running!');
@@ -410,13 +408,13 @@ Commands ran     : ${commandCount}\`\`\``);
 							neinNameArray.push(message.author.username);
 							break;
 						case optionArray[2]:
-							if (optionArray[2]!=''){
-								absArray.push(message.author.id);
-								absNameArray.push(message.author.username);
-								break;
-							}
+							//I don't think we need to check if a 3rd option exist
+							//since optionArray[2] DNE if 3rd option does not exist
+							absArray.push(message.author.id);
+							absNameArray.push(message.author.username);
+							break;
 						default:
-							message.reply('Your options in this poll are: ' + optionArray);
+							message.reply('Your options in this poll are: ' + optionArray.join('|'));
 							return;
 					}
 					message.reply(' :ballot_box_with_check: | Your vote has been recorded.');
