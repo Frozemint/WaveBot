@@ -359,6 +359,7 @@ Commands ran     : ${commandCount}\`\`\``);
 						pollQuestion = message.content.substring(commandText[0].length+commandText[1].length+1);
 						message.reply(':white_check_mark: | Poll question set to: ' + pollQuestion + '.');
 						break;
+					case "option":
 					case "options":
 						if (!commandText[3]){
 							message.reply(':warning: | You need to specify at least 2 options.');
@@ -368,6 +369,7 @@ Commands ran     : ${commandCount}\`\`\``);
 						//optionArray.push('');
 						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray.join('|'));
 						break;
+					case "defaults":
 					case "default":
 						optionArray = ['Yes', 'No'];
 						pollQuestion = 'Placeholder question';
@@ -429,6 +431,7 @@ Commands ran     : ${commandCount}\`\`\``);
 				}
 				break;
 
+			case "/result":
 			case "/results":
 				if (universalSuffrage === false){
 					message.reply(':warning: | There are currently no polls in progress.');
