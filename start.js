@@ -33,12 +33,7 @@ var sleeping = false;
 var universalSuffrage = false;
 var pollChannelID = '';
 var pollQuestion = "";
-var jaArray = [];
-var neinArray = [];
-var absArray= [];
-var jaNameArray = [];
-var neinNameArray = [];
-var absNameArray = [];
+var votersArray = [];
 var optionArray = [];
 
 var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
@@ -108,6 +103,41 @@ function findUserMessages(message){
 		}
 	}
 	return false;
+}
+
+function findUserVote(user){
+	value = '';
+	for (var i = 0; i < votersArray.length; i++){
+		value = votersArray[i].split('|');
+		if (value[1].indexOf(user) > -1){
+			return true;
+		}
+	}
+	return false;
+}
+
+function countUserVote(option){
+	value2 = '';
+	totalVoters = 0;
+	for (var i = 0; i < votersArray.length; i++){
+		value2 = votersArray[i].split('|');
+		if (value2[0].indexOf(option) > -1){
+			totalVoters++;
+		}
+	}
+	return totalVoters;
+}
+
+function countVoteIdentity(user){
+	value3 = '';
+	votersIdentity = [];
+	for (var i = 0; i < votersArray.length; i++){
+		value3 = votersArray[i].split('|');
+		if (value3.indexOf(user) > -1){
+			votersIdentity.push(value3[2]);
+		}
+	}
+	return votersIdentity.join(', ');
 }
 
 bot.once("ready", () => {
@@ -330,8 +360,8 @@ Commands ran     : ${commandCount}\`\`\``);
 						message.reply(':white_check_mark: | Poll question set to: ' + pollQuestion + '.');
 						break;
 					case "options":
-						if (!commandText[3] || 3 >= commandText.length || commandText.length > 5){
-							message.reply(':warning: | You must specify at least 2 options and no more than 3 options.');
+						if (!commandText[3]){
+							message.reply(':warning: | You need to specify at least 2 options.');
 							return;
 						}
 						optionArray = commandText.slice(2, commandText.length);
@@ -339,19 +369,14 @@ Commands ran     : ${commandCount}\`\`\``);
 						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray.join('|'));
 						break;
 					case "default":
-						optionArray = ['Yes', 'No', ''];
+						optionArray = ['Yes', 'No'];
 						pollQuestion = 'Placeholder question';
 						message.reply(':white_check_mark: | Default options and question loaded.');
 
 					case "start":
 						if (universalSuffrage === false && optionArray.length >= 2 && pollQuestion.length > 0){ //If there is no poll in progress
 							message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <' + optionArray.join('|') + '>!');
-							neinArray = []; //Clear previous poll results
-							jaArray = [];
-							absArray = [];
-							neinNameArray = [];
-							jaNameArray = [];
-							absNameArray = [];
+							votersArray = [];
 							universalSuffrage = true;
 							pollChannelID = message.channel.id;
 						} else if (universalSuffrage === true){
@@ -365,13 +390,13 @@ Commands ran     : ${commandCount}\`\`\``);
 					case "end":
 						if (universalSuffrage === true){ //Check if polls is running before closing it.
 							message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
-							message.channel.sendCode('asciidoc', `FINAL VOTING RESULTS ON: ${pollQuestion}\n
-• ${optionArray[0]}:: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• ${optionArray[0]} Voters:: ${jaNameArray.toString()}
-• ${optionArray[1]}:: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• ${optionArray[1]} Voters:: ${neinNameArray.toString()}
-• ${optionArray[2]}:: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• ${optionArray[2]} Voters:: ${absNameArray.toString()}`);
+							resultString = `FINAL RESULTS ON: ${pollQuestion}`;
+							for (i = 0; i < Math.max(optionArray.length, votersArray.length); i++){
+							resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;
+							resultString += `\n•${optionArray[i]} Voters:: ${countVoteIdentity(optionArray[i])}`;
+						}
+							
+							message.channel.sendCode('asccidoc', resultString);
 							universalSuffrage = false;
 						} else if (universalSuffrage === false){
 							message.reply(':warning: | There is no poll currently running!');
@@ -387,53 +412,36 @@ Commands ran     : ${commandCount}\`\`\``);
 				if (universalSuffrage === false){ //Check if there is a poll in progress.
 					message.reply('There are currently no polls in progress.');
 					return;
-				}
-				if (message.channel.id != pollChannelID){
+				} else if (message.channel.id != pollChannelID){
 					message.reply(' :no_entry_sign: | Please vote in the text channel where the poll is being hosted.');
 					return;
-				}
-				if (!commandText[1]){
-					message.reply('Your options in this poll are: ' + optionArray);
+				} else if (!commandText[1] || optionArray.indexOf(commandText[1])=== -1){
+					message.reply('Your options in this poll are: ' + optionArray.join('|'));
 					return;
 				}
 
-				if (jaArray.indexOf(message.author.id) === -1 && neinArray.indexOf(message.author.id) === -1 && absArray.indexOf(message.author.id) === -1){
-					switch (commandText[1].toLowerCase()){
-						case optionArray[0]:
-							jaArray.push(message.author.id);
-							jaNameArray.push(message.author.username);
-							break;
-						case optionArray[1]:
-							neinArray.push(message.author.id);
-							neinNameArray.push(message.author.username);
-							break;
-						case optionArray[2]:
-							//I don't think we need to check if a 3rd option exist
-							//since optionArray[2] DNE if 3rd option does not exist
-							absArray.push(message.author.id);
-							absNameArray.push(message.author.username);
-							break;
-						default:
-							message.reply('Your options in this poll are: ' + optionArray.join('|'));
-							return;
-					}
-					message.reply(' :ballot_box_with_check: | Your vote has been recorded.');
-				} else if (jaArray.indexOf(message.author.id) > -1 || neinArray.indexOf(message.author.id) > -1 || absArray.indexOf(message.author.id) > -1){
+				if (findUserVote(message.author.id) === false){ //Find uservote returns false if user ID does not match with those who already voted
+					votersArray.push(commandText[1] + '|' + message.author.id + '|' + message.author.username);
+					message.reply(' :white_check_mark: | Your vote has been recorded!\nDo /results for the latest results.');
+				} else {
 					message.reply(' :no_entry_sign: | You have already voted once!');
-					break;
+					return;
 				}
-				//no BREAK statement as we always display results after a vote.
+				break;
 
 			case "/results":
 				if (universalSuffrage === false){
-					message.channel.sendMessage(':warning: | There are currently no polls in progress.');
+					message.reply(':warning: | There are currently no polls in progress.');
 					return;
 				}
-				//message.channel.sendMessage('Results for poll on question: ' + pollQuestion + '\nYes: ' + jaArray.length + ' votes' + '\nNo: ' + neinArray.length + ' votes' + '\nAbstain: ' + absArray.length + ' votes');
-				message.channel.sendMessage(`Voting results on ${pollQuestion}:\n` + `\`\`\`Markdown
-• ${optionArray[0]}:: ${jaArray.length} votes (${Math.round((jaArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• ${optionArray[1]}:: ${neinArray.length} votes (${Math.round((neinArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)
-• ${optionArray[2]}:: ${absArray.length} votes (${Math.round((absArray.length/(jaArray.length+neinArray.length+absArray.length))*100)}%)\`\`\``);
+
+				resultString = `VOTING RESULTS ON: ${pollQuestion}`;
+				for (i = 0; i < Math.max(optionArray.length, votersArray.length); i++){
+					resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;
+					resultString += `\n•${optionArray[i]} Voters:: [${countVoteIdentity(optionArray[i])}]`;
+				}
+				
+				message.channel.sendCode('asccidoc', resultString);
 				break;
 
 			default:
