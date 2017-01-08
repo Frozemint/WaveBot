@@ -364,6 +364,9 @@ Commands ran     : ${commandCount}\`\`\``);
 						if (!commandText[3]){
 							message.reply(':warning: | You need to specify at least 2 options.');
 							return;
+						} else if (universalSuffrage === true){
+							message.reply(' :warning: | You cannot change options while poll is active!');
+							return;
 						}
 						optionArray = commandText.slice(2, commandText.length);
 						//optionArray.push('');
