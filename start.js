@@ -359,6 +359,7 @@ Commands ran     : ${commandCount}\`\`\``);
 						pollQuestion = message.content.substring(commandText[0].length+commandText[1].length+1);
 						message.reply(':white_check_mark: | Poll question set to: ' + pollQuestion + '.');
 						break;
+					case "option":
 					case "options":
 						if (!commandText[3]){
 							message.reply(':warning: | You need to specify at least 2 options.');
@@ -368,6 +369,7 @@ Commands ran     : ${commandCount}\`\`\``);
 						//optionArray.push('');
 						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray.join('|'));
 						break;
+					case "defaults":
 					case "default":
 						optionArray = ['Yes', 'No'];
 						pollQuestion = 'Placeholder question';
@@ -375,7 +377,7 @@ Commands ran     : ${commandCount}\`\`\``);
 
 					case "start":
 						if (universalSuffrage === false && optionArray.length >= 2 && pollQuestion.length > 0){ //If there is no poll in progress
-							message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <' + optionArray.join('|') + '>!');
+							message.reply(' :mega: | Started a poll on: ' + pollQuestion + '\nVote with /vote <' + optionArray.join(' | ') + '>!');
 							votersArray = [];
 							universalSuffrage = true;
 							pollChannelID = message.channel.id;
@@ -390,8 +392,8 @@ Commands ran     : ${commandCount}\`\`\``);
 					case "end":
 						if (universalSuffrage === true){ //Check if polls is running before closing it.
 							message.channel.sendMessage('Poll on: ' + pollQuestion + ' is now CLOSED!');
-							resultString = `FINAL RESULTS ON: ${pollQuestion}`;
-							for (i = 0; i < Math.max(optionArray.length, votersArray.length); i++){
+							resultString = `FINAL RESULTS ON: ${pollQuestion}\n`;
+							for (i = 0; i < optionArray.length; i++){
 							resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;
 							resultString += `\n•${optionArray[i]} Voters:: ${countVoteIdentity(optionArray[i])}`;
 						}
@@ -416,7 +418,8 @@ Commands ran     : ${commandCount}\`\`\``);
 					message.reply(' :no_entry_sign: | Please vote in the text channel where the poll is being hosted.');
 					return;
 				} else if (!commandText[1] || optionArray.indexOf(commandText[1])=== -1){
-					message.reply('Your options in this poll are: ' + optionArray.join('|'));
+					//optionArray.toString().toLowerCase(); for case insensitivity.
+					message.reply('Your options in this poll are: ' + optionArray.join(' | '));
 					return;
 				}
 
@@ -429,14 +432,15 @@ Commands ran     : ${commandCount}\`\`\``);
 				}
 				break;
 
+			case "/result":
 			case "/results":
 				if (universalSuffrage === false){
 					message.reply(':warning: | There are currently no polls in progress.');
 					return;
 				}
 
-				resultString = `VOTING RESULTS ON: ${pollQuestion}`;
-				for (i = 0; i < Math.max(optionArray.length, votersArray.length); i++){
+				resultString = `VOTING RESULTS ON: ${pollQuestion}\n`;
+				for (i = 0; i < optionArray.length; i++){
 					resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;
 					resultString += `\n•${optionArray[i]} Voters:: [${countVoteIdentity(optionArray[i])}]`;
 				}
