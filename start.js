@@ -107,7 +107,7 @@ function findUserMessages(message){
 
 function findUserVote(user){
 	value = '';
-	for (i = 0; i < votersArray.length; i++){
+	for (var i = 0; i < votersArray.length; i++){
 		value = votersArray[i].split('|');
 		if (value[1].indexOf(user) > -1){
 			return true;
@@ -119,7 +119,7 @@ function findUserVote(user){
 function countUserVote(option){
 	value = '';
 	totalVoters = 0;
-	for (i = 0; i < votersArray.length; i++){
+	for (var i = 0; i < votersArray.length; i++){
 		value = votersArray[i].split('|');
 		if (value[0].indexOf(option) > -1){
 			totalVoters++;
@@ -131,10 +131,10 @@ function countUserVote(option){
 function countVoteIdentity(user){
 	value = '';
 	votersIdentity = [];
-	for (i = 0; i < votersArray.length; i++){
+	for (var i = 0; i < votersArray.length; i++){
 		value = votersArray[i].split('|');
 		if (value.indexOf(user) > -1){
-			votersIdentity.push(value[2]);
+			votersIdentity.push(value3[2]);
 		}
 	}
 	return votersIdentity.join(', ');
@@ -364,6 +364,9 @@ Commands ran     : ${commandCount}\`\`\``);
 						if (!commandText[3]){
 							message.reply(':warning: | You need to specify at least 2 options.');
 							return;
+						} else if (universalSuffrage === true){
+							message.reply(' :warning: | You cannot change options while poll is active!');
+							return;
 						}
 						optionArray = commandText.slice(2, commandText.length);
 						//optionArray.push('');
@@ -445,7 +448,7 @@ Commands ran     : ${commandCount}\`\`\``);
 					resultString += `\n•${optionArray[i]} Voters:: [${countVoteIdentity(optionArray[i])}]`;
 				}
 				
-				message.channel.sendCode('asccidoc', resultString);
+				message.channel.sendCode('asciidoc', resultString);
 				break;
 
 			default:
