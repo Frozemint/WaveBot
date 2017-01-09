@@ -81,10 +81,10 @@ function antiSpamFunction(message){
 
 	Message removal is not executed if the checks above are failed at any point.
 	*/
-	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && whiteListArray.indexOf(message.content.toLowerCase()) === -1){
+	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && message.content.toLowerCase().indexOf(whiteListArray.toString().toLowerCase()) === -1){
 		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
 		return true;
-	} else if (whiteListArray.indexOf(message.content.toLowerCase()) > -1){
+	} else if (message.content.toLowerCase().indexOf(whiteListArray.toString().toLowerCase()) > -1 && message.author.bot === true){
 		console.log(Date() + ': Message \'' + message.content + '\' is whitelisted. Not removing.');
 		return false;
 	} else {
@@ -97,7 +97,7 @@ function findMessage(message){
 }
 
 function findUserMessages(message){
-	for (var i = 0; i < commandArray.length; i++){
+	for (i = 0; i < commandArray.length; i++){
 		if (message.content.toLowerCase().startsWith(commandArray[i])){
 			return true;
 		}
@@ -107,7 +107,7 @@ function findUserMessages(message){
 
 function findUserVote(user){
 	value = '';
-	for (var i = 0; i < votersArray.length; i++){
+	for (i = 0; i < votersArray.length; i++){
 		value = votersArray[i].split('|');
 		if (value[1].indexOf(user) > -1){
 			return true;
@@ -117,11 +117,11 @@ function findUserVote(user){
 }
 
 function countUserVote(option){
-	value2 = '';
+	value = '';
 	totalVoters = 0;
-	for (var i = 0; i < votersArray.length; i++){
-		value2 = votersArray[i].split('|');
-		if (value2[0].indexOf(option) > -1){
+	for (i = 0; i < votersArray.length; i++){
+		value = votersArray[i].split('|');
+		if (value[0].indexOf(option) > -1){
 			totalVoters++;
 		}
 	}
@@ -129,12 +129,12 @@ function countUserVote(option){
 }
 
 function countVoteIdentity(user){
-	value3 = '';
+	value = '';
 	votersIdentity = [];
-	for (var i = 0; i < votersArray.length; i++){
-		value3 = votersArray[i].split('|');
-		if (value3.indexOf(user) > -1){
-			votersIdentity.push(value3[2]);
+	for (i = 0; i < votersArray.length; i++){
+		value = votersArray[i].split('|');
+		if (value.indexOf(user) > -1){
+			votersIdentity.push(value[2]);
 		}
 	}
 	return votersIdentity.join(', ');
