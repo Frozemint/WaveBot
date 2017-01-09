@@ -134,7 +134,7 @@ function countVoteIdentity(user){
 	for (var i = 0; i < votersArray.length; i++){
 		value = votersArray[i].split('|');
 		if (value.indexOf(user) > -1){
-			votersIdentity.push(value3[2]);
+			votersIdentity.push(value[2]);
 		}
 	}
 	return votersIdentity.join(', ');
@@ -297,20 +297,24 @@ bot.on('message', message => {
 				break;
 
 			case "/help":
-				//Print to the user's DM so we don't spam server.
-				message.channel.sendMessage('Please check your direct message :D');
-				//I know. Don't ask why.
-				message.author.sendMessage('***Command List***\n' +
-					'/help - Show this message\n' +
-					'/ping - Pings the bot, useful for checking my status\n' +
-					'/say <text> - Prints something into text channel\n' +
-					'***Admin Only ***\n' + 
-					'/clear - Clear all output from WaveBot in text channel\n' + 
-					'/clrcom - Clear all commands from users to WaveBot in text channel\n' + 
-					'/clearall - Clear ALL bot outputs in a text channel, including WaveBot\n' +
-					'/antispam - Toggle antispam for automatically deleting bot outputs in non-bot channels\n' +
-					'/sayin <delay in mins> <text> - After delay, print text into text channel\n' +
-					'/exit - Exit this bot');
+				
+				message.author.sendMessage('**Command List for WaveBot**\n'+
+					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
+/say <content> - Makes WaveBot type <content> into the text channel the command was ran
+/about - Prints information about WaveBot
+/info - Prints statistics about WaveBot
+/vote <option> - Vote for <option> when a poll is active
+/results - Used to view results of a poll when a poll is active
+
+----- Admin Commands ----- 
+
+/sayin <content> <delay in minutes> - WaveBot will announce <content> after <delay in minutes> in the channel the command was ran
+/clrcom - Clear all command massages related to WaveBot from users in the channel this command was ran
+/clear - Clear all WaveBot output from the channel this command was ran
+/antispam - Toggle the automated removal of bot messages from unwanted channels
+/poll <question/options/default/start/end> [options...] - Used to host a poll
+/eval <javascript code> - Used to run arbitary Javascript Code. USE WITH CAUTION!
+/exit - Exits WaveBot\`\`\``);
 				break;
 				
 			case "/about":
@@ -352,7 +356,7 @@ Commands ran     : ${commandCount}\`\`\``);
 			case "/poll":
 				//Only admins can create polls and check if poll question exist
 				if (!checkPermissions(message)) {return;}
-				if (!commandText[1]) {message.reply(' :warning: | Try /poll <question/options/default/start/end> [option1] [option2] [option3]'); return;}
+				if (!commandText[1]) {message.reply(' :warning: | Try /poll <question/options/default/start/end> [options...]'); return;}
 
 				switch (commandText[1].toLowerCase()){
 					case "question":
@@ -370,7 +374,7 @@ Commands ran     : ${commandCount}\`\`\``);
 						}
 						optionArray = commandText.slice(2, commandText.length);
 						//optionArray.push('');
-						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray.join('|'));
+						message.reply(':white_check_mark: | Options of poll set to: ' + optionArray.join(' | '));
 						break;
 					case "defaults":
 					case "default":
@@ -398,10 +402,10 @@ Commands ran     : ${commandCount}\`\`\``);
 							resultString = `FINAL RESULTS ON: ${pollQuestion}\n`;
 							for (i = 0; i < optionArray.length; i++){
 							resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;
-							resultString += `\n•${optionArray[i]} Voters:: ${countVoteIdentity(optionArray[i])}`;
+							resultString += `\n•${optionArray[i]} Voters:: [${countVoteIdentity(optionArray[i])}]`;
 						}
 							
-							message.channel.sendCode('asccidoc', resultString);
+							message.channel.sendCode('asciidoc', resultString);
 							universalSuffrage = false;
 						} else if (universalSuffrage === false){
 							message.reply(':warning: | There is no poll currently running!');
