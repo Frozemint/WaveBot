@@ -81,10 +81,12 @@ function antiSpamFunction(message){
 
 	Message removal is not executed if the checks above are failed at any point.
 	*/
-	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && botOnlyServers.indexOf(message.guild.id) > -1 && message.content.toLowerCase().indexOf(whiteListArray.toString().toLowerCase()) === -1){
+	tempMessage = message.content.toLowerCase();
+	regArray = new RegExp(whiteListArray.join("|"), "i");
+	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && tempMessage.match(regArray) === null){
 		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
 		return true;
-	} else if (message.content.toLowerCase().indexOf(whiteListArray.toString().toLowerCase()) > -1 && message.author.bot === true){
+	} else if (tempMessage.match(regArray) != null){
 		console.log(Date() + ': Message \'' + message.content + '\' is whitelisted. Not removing.');
 		return false;
 	} else {
