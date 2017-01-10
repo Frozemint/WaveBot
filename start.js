@@ -83,10 +83,10 @@ function antiSpamFunction(message){
 	*/
 	tempMessage = message.content.toLowerCase();
 	regArray = new RegExp(whiteListArray.join("|"), "i");
-	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && tempMessage.match(regArray) === null){
+	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && tempMessage.match(regArray) === null && botOnlyServers.indexOf(message.guild.id) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
 		return true;
-	} else if (tempMessage.match(regArray) != null){
+	} else if (tempMessage.match(regArray) != null && botOnlyChannels.indexOf(message.channel.id) === -1 && botOnlyServers.indexOf(message.guild.id) > -1 && message.author.bot === true && botOnlyServers.indexOf(message.guild.id) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' is whitelisted. Not removing.');
 		return false;
 	} else {
