@@ -20,6 +20,8 @@ const whiteListArray = config.whitelistWords;
 const botOnlyChannels = config.botChannel;
 //botOnlyServers is the list of servers that antispam should monitor.
 const botOnlyServers = config.checkServers;
+//CommandPrefix is the prefix of a command.
+var commandPrefix = config.commandPrefix; 
 
 //Counters for stats
 var messagesCount = 0;
@@ -183,23 +185,24 @@ bot.on('message', message => {
 		}
 	}
 
-	if (message.content[0] === '/' && message.author.bot != true && sleeping === false){ 
+	if (message.content[0] === commandPrefix && message.author.bot != true && sleeping === false){ 
 		//if message starts with a /
 		//and make sure we're not replying to a bot (including ourselves)
 		console.log(Date() + ': ' + 'Treating message with content: "' + message.content + '" written by ' + message.author.username + ' as a command.');
 
 		var commandText = message.content.split(" "); //Sort command and arguments into array
+		commandText[0] = commandText[0].substring(1, commandText[0].length);
 
 		commandCount++; //Increase command counter
 
 		/* Commands */
 		switch (commandText[0].toLowerCase()) {
-			case "/ping":
+			case "ping":
 				//Bot reply to /ping messages. Useful for checking uptimes.
 				message.channel.sendMessage('*waves back*');
 				break;
 
-			case "/say":
+			case "say":
 				//Bot prints argument to channel.
 				//Usage: /say <argument>
 				if (!commandText[1]){
@@ -209,7 +212,7 @@ bot.on('message', message => {
 				message.channel.sendMessage(message.content.substring(commandText[0].length+1)); 
 				break;
 
-			case "/sayin":
+			case "sayin":
 				//Announce text after set delay
 				//Usage: /sayin <Delay in mins> <Text to announce>
 				if (checkPermissions(message)){
@@ -223,7 +226,7 @@ bot.on('message', message => {
 				}
 				break;
 
-			case "/clear":
+			case "clear":
 				//Clear all messages from the bot.
 				message.delete();
 				console.log(message.author.username + ' requested to clear bot messages.');
@@ -249,7 +252,7 @@ bot.on('message', message => {
 				}
 				break;
 
-			case "/clrcom":
+			case "clrcom":
 				//Clear all command messages from users.
 				if (checkPermissions(message) && message.guild.member(bot.user).permissions.hasPermission("MANAGE_MESSAGES")){
 					message.channel.fetchMessages({limit: 100}).then(function (m){
@@ -273,7 +276,7 @@ bot.on('message', message => {
 
 				break;
 
-			case "/antispam":
+			case "antispam":
 				//Toggle anti-spam detection.
 				if (checkPermissions(message)){
 					if (antiSpam === true){
@@ -286,7 +289,7 @@ bot.on('message', message => {
 				}
 				break;
 
-			case "/exit":
+			case "exit":
 				//Exit the bot process.
 				if (checkPermissions(message)){
 					console.log(Date() + ': Shuting down bot by /exit command.');
@@ -298,7 +301,7 @@ bot.on('message', message => {
 				}
 				break;
 
-			case "/help":
+			case "help":
 				
 				message.author.sendMessage('**Command List for WaveBot**\n'+
 					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
@@ -319,7 +322,7 @@ bot.on('message', message => {
 /exit - Exits WaveBot\`\`\``);
 				break;
 				
-			case "/about":
+			case "about":
 				//Prints the about me to a user's DM.
 				message.reply('Hi, \n' +
 					'I am made by <@114721723894595589> :D\n' +
@@ -328,7 +331,7 @@ bot.on('message', message => {
 				break;
 
 			
-			case "/info":
+			case "info":
 				//View bot stats
 				message.reply(`Information on WaveBot:\n` + `\`\`\`Logged in as     : ${bot.user.username}
 Discord uptime   : ${Math.floor(bot.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(bot.uptime / (1000 * 60 * 60))} hours ${Math.floor(bot.uptime / (1000 * 60))% 60} minutes ${Math.floor(bot.uptime / 1000) % 60} seconds
@@ -338,7 +341,7 @@ Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``);
 				break;
 
-			case "/eval":
+			case "eval":
 				// /eval runs arbitary javascript code.
 				if (checkPermissions(message)){
 					try {
@@ -355,7 +358,7 @@ Commands ran     : ${commandCount}\`\`\``);
 
 			/* Poll code */
 
-			case "/poll":
+			case "poll":
 				//Only admins can create polls and check if poll question exist
 				if (!checkPermissions(message)) {return;}
 				if (!commandText[1]) {message.reply(' :warning: | Try /poll <question/options/default/start/end> [options...]'); return;}
@@ -419,7 +422,7 @@ Commands ran     : ${commandCount}\`\`\``);
 				}
 				break; //break out of the giant command switch block.
 
-			case "/vote":
+			case "vote":
 				if (universalSuffrage === false){ //Check if there is a poll in progress.
 					message.reply('There are currently no polls in progress.');
 					return;
@@ -441,8 +444,8 @@ Commands ran     : ${commandCount}\`\`\``);
 				}
 				break;
 
-			case "/result":
-			case "/results":
+			case "result":
+			case "results":
 				if (universalSuffrage === false){
 					message.reply(':warning: | There are currently no polls in progress.');
 					return;
