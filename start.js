@@ -38,12 +38,11 @@ var pollQuestion = "";
 var votersArray = [];
 var optionArray = [];
 
-var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
-
 process.title = 'wavebot';
 
 //I honestly don't know why this works. Catch unhandled exceptions and write to ???
 process.on('uncaughtException', function(err) {
+	errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 	console.log('Uncaught exception at time: ' + Date());
 	bot.destroy();
 	errorLog.write((err && err.stack) ? err.stack : err);
