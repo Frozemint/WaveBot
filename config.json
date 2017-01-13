@@ -1,6 +1,0 @@
-{
-	"allowedUsers" : ["Your User IDs here"],
-	"passiveClear" : "false",
-	"botChannel" : ["Your Bot channel ID here"],
-	"checkServers" : ["Your Server ID here"]
-}
