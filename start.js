@@ -9,7 +9,7 @@ const util = require('util');
 process.title = 'wavebot';
 
 process.on('uncaughtException', function(err){
-	var errLog = fs.createWriteStream('error.log', {flags: 'a'});
+	var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 	console.log('Uncaught exception at time: ' + Date());
 	bot.destroy();
 	errorLog.write('BEGIN ERROR LOG at time ' + Date() + '\n');

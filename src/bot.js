@@ -1,6 +1,9 @@
 const Discord = require('discord.js');
 const command = require('./commands.js');
 const bot = new Discord.Client({autoReconnect: true});
+const config = require('../config.json');
+
+const commandPrefix = config.commandPrefix;
 
 bot.once("ready", () => {
 	//This is run when the bot is ready in discord.
@@ -22,8 +25,9 @@ bot.on('reconnecting', function(){
 });
 
 bot.on('message', function(message){
-	if (message.author === bot.user){ return; } //Prevent bot from replying to itself
-	message.reply(command.readBotCommand(message));
+	if (message.author.bot === false && message.content[0] === commandPrefix){
+		message.channel.sendMessage(command.readBotCommand(message));
+	}
 })
 
 module.exports = bot;
