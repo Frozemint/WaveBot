@@ -1,3 +1,11 @@
+const config = require('../config.json');
+
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
+
+const whiteListArray = config.whitelistWords;
+const botOnlyChannels = config.botChannel;
+const botOnlyServers = config.checkServers;
+
 function checkPermissions (message){
 	if (message.member.roles.find('name', 'Bot Commander') || message.author.id === '114721723894595589' || message.member.hasPermission('ADMINISTRATOR')) {
 		//Check if use has role "Bot Commander" tagged or if writer of bot is trying ot run command.
@@ -11,7 +19,7 @@ function checkPermissions (message){
 	}
 }
 
-function antiSpamFunction (message){
+function antiSpamFunction (bot, message){
 
 	/* Check if writer of message is:
 	- A bot
@@ -23,9 +31,9 @@ function antiSpamFunction (message){
 
 	Message removal is not executed if the checks above are failed at any point.
 	*/
-	let tempMessage = message.content.toLowerCase();
-	let regex = new RegExp(whiteListArray.join("|"), "i");
-	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && antiSpam === true && message.author != bot.user && tempMessage.match(regex) === null && botOnlyServers.indexOf(message.guild.id) > -1){
+	tempMessage = message.content.toLowerCase();
+	regex = new RegExp(whiteListArray.join("|"), "im");
+	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && message.author != bot.user && tempMessage.match(regex) === null && botOnlyServers.indexOf(message.guild.id) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
 		return true;
 	} else if (tempMessage.match(regex) != null && botOnlyChannels.indexOf(message.channel.id) === -1 && botOnlyServers.indexOf(message.guild.id) > -1 && message.author.bot === true && botOnlyServers.indexOf(message.guild.id) > -1){
@@ -34,19 +42,6 @@ function antiSpamFunction (message){
 	} else {
 		return false;
 	}
-}
-
-function findMessage (message){
-	return (bot.user === message.author);
-}
-
-function findUserMessages (message){
-	for (i = 0; i < commandArray.length; i++){
-		if (message.content.toLowerCase().startsWith(commandArray[i])){
-			return true;
-		}
-	}
-	return false;
 }
 
 function findUserVote (user){
@@ -84,8 +79,6 @@ function countVoteIdentity (user){
 module.exports = {
 	checkPermissions: checkPermissions,
 	antiSpamFunction: antiSpamFunction,
-	findMessage: findMessage,
-	findUserMessages: findUserMessages,
 	findUserVote: findUserVote,
 	countUserVote: countUserVote,
 	countVoteIdentity: countVoteIdentity
