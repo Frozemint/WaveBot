@@ -25,16 +25,33 @@ client.on('reconnecting', function(){
 	console.log(Date() + ': Attempting to reconnect...');
 });
 
+client.on('warn', function(info){
+	//Emitted by discord.js on general discord error
+	console.log(Date() + ': Discord.js encountered an error - ' + info);
+});
+
+client.on('error', function(error){
+	//Emitted by discord.js on a connection error
+	console.log(Date() + ': Discord.js encountered a connection error - ' + error);
+});
+
+/*client.on('debug', function(info){
+	//Emitted by discord.js on a connection error
+	console.log(Date() + ': Debug info from discord:  ' + info);
+});*/
+
+
 client.on('message', function(message){
-	if (message.channel instanceof Discord.DMChannel) { return; } //Do not respond to DM.
+	if (message.channel instanceof Discord.DMChannel) { message.author.sendMessage('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
+	command.increaseMessageCounter();
 
 	if (botFunction.antiSpamFunction(client, message) === true){
 		message.delete();
-		command.increaseMessageCounter();
+		command.increaseRemovedCounter();
 	}
 
 	if (message.author.bot === false && message.content[0] === commandPrefix){
-		
+		command.increaseCommandCounter();
 		output = command.readBotCommand(client, message, message.user);
 		if (output) { message.channel.sendMessage(output);}
 	}

@@ -5,18 +5,11 @@ const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '
 const whiteListArray = config.whitelistWords;
 const botOnlyChannels = config.botChannel;
 const botOnlyServers = config.checkServers;
+var antiSpam = true;
 
-function checkPermissions (message){
-	if (message.member.roles.find('name', 'Bot Commander') || message.author.id === '114721723894595589' || message.member.hasPermission('ADMINISTRATOR')) {
-		//Check if use has role "Bot Commander" tagged or if writer of bot is trying ot run command.
-		console.log(Date() + ': User ' + message.author.username + ' is admin, running command.');
-		return true;
-	} else {
-		//Log the incident if it's not an authorised user.
-		console.log('User ' + message.author.username + ' just attempted to run a admin only command and was denied.');
-		message.channel.sendMessage(':no_entry_sign: | You do not have permission to execute the said command, this incident will be reported.');
-		return false;
-	}
+function toggleAntispam(){
+	antiSpam = !antiSpam;
+	return ':white_check_mark: | Antispam function has been toggled to: ' + antiSpam;
 }
 
 function antiSpamFunction (bot, message){
@@ -33,7 +26,7 @@ function antiSpamFunction (bot, message){
 	*/
 	tempMessage = message.content.toLowerCase();
 	regex = new RegExp(whiteListArray.join("|"), "im");
-	if (message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && message.author != bot.user && tempMessage.match(regex) === null && botOnlyServers.indexOf(message.guild.id) > -1){
+	if (antiSpam === true && message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && message.author != bot.user && tempMessage.match(regex) === null && botOnlyServers.indexOf(message.guild.id) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
 		return true;
 	} else if (tempMessage.match(regex) != null && botOnlyChannels.indexOf(message.channel.id) === -1 && botOnlyServers.indexOf(message.guild.id) > -1 && message.author.bot === true && botOnlyServers.indexOf(message.guild.id) > -1){
@@ -45,6 +38,7 @@ function antiSpamFunction (bot, message){
 }
 
 module.exports = {
-	checkPermissions: checkPermissions,
 	antiSpamFunction: antiSpamFunction,
+	toggleAntispam: toggleAntispam,
+	antiSpam
 };

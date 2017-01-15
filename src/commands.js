@@ -6,8 +6,16 @@ const permissionFunction = require('./permissions.js');
 //Counters for stats
 var messagesCount = 0,removedMessages = 0, commandCount = 0;
 
-function increaseMessageCounter(){
+function increaseRemovedCounter(){
 	removedMessages++;
+}
+
+function increaseMessageCounter(){
+	messagesCount++;
+}
+
+function increaseCommandCounter(){
+	commandCount++;
 }
 
 function readBotCommand(client, message){
@@ -38,6 +46,10 @@ Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.
 Messages tracked : ${messagesCount}
 Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``;
+
+				case "antispam":
+					return botFunctions.toggleAntispam();
+
 				case "poll":
 					if (!commandText[1]){ return ('Try /poll <question/options/start/end> [Options...]');}
 					if (permissionFunction.checkPermissions(message) === false){ return;}
@@ -69,6 +81,7 @@ Commands ran     : ${commandCount}\`\`\``;
 			case "vote":
 				return votingFunctions.castVote(message.channel.id, commandText[1], message.author.id, message.author.username);
 				break;
+
 			case "help":
 					message.author.sendMessage('**Command List for WaveBot**\n'+
 					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
@@ -77,8 +90,8 @@ Commands ran     : ${commandCount}\`\`\``;
 /info - Prints statistics about WaveBot
 /vote <option> - Vote for <option> when a poll is active
 /results - Used to view results of a poll when a poll is active
-\n\n----- Admin Commands -----\n\n
 /sayin <content> <delay in minutes> - WaveBot will announce <content> after <delay in minutes> in the channel the command was ran
+\n----- Admin Commands -----\n
 /clrcom - Clear all command massages related to WaveBot from users in the channel this command was ran
 /clear - Clear all WaveBot output from the channel this command was ran
 /antispam - Toggle the automated removal of bot messages from unwanted channels
@@ -93,5 +106,8 @@ Commands ran     : ${commandCount}\`\`\``;
 
 module.exports = {
 	readBotCommand: readBotCommand,
-	increaseMessageCounter: increaseMessageCounter
+	increaseRemovedCounter: increaseRemovedCounter,
+	increaseMessageCounter: increaseMessageCounter,
+	increaseCommandCounter: increaseCommandCounter
+
 }
