@@ -39,6 +39,16 @@ function readBotCommand(client, message){
 						client.destroy().then(function() { process.exit(0);});
 					}
 					break;
+				case "eval":
+					if (permissionFunction.checkPermissions(message)){
+						try {
+							code = message.content.substring(commandText[0].length+1);
+							message.channel.sendCode('xl', eval(code));
+						} catch (err){
+							message.channel.sendMessage(`Encountered error during eval:\n` + `\`\`\`${err}\`\`\``);
+						}
+					}
+					break;
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as     : ${client.user.username}
 Discord uptime   : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60))} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
