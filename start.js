@@ -11,7 +11,7 @@ process.title = 'wavebot';
 process.on('uncaughtException', function(err){
 	var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 	console.log('Uncaught exception at time: ' + Date());
-	bot.destroy();
+	bot.client.destroy();
 	errorLog.write('BEGIN ERROR LOG at time ' + Date() + '\n');
 	errorLog.write((err && err.stack) ? err.stack : err);
 	errorLog.end('\nEnd of Error Log at time ' + Date() + '\n\n');
@@ -25,4 +25,4 @@ process.on('exit', function(code){
 	console.log('Bot process exiting at time: ' + Date());
 });
 
-bot.login(auth.token);
+bot.client.login(auth.token);

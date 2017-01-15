@@ -22,6 +22,7 @@ function readBotCommand(client, message){
 		commandText = message.content.split(" ");
 		commandText[0] = commandText[0].substring(1, commandText[0].length);
 		messagesCount++;
+		console.log(Date() + ': Treating ' + message.content + ' typed by ' + message.author.username + ' as a command.');
 
 		switch(commandText[0].toLowerCase()){
 				case "ping":
@@ -45,7 +46,7 @@ function readBotCommand(client, message){
 							code = message.content.substring(commandText[0].length+1);
 							message.channel.sendCode('xl', eval(code));
 						} catch (err){
-							message.channel.sendMessage(`Encountered error during eval:\n` + `\`\`\`${err}\`\`\``);
+							message.channel.sendMessage(`:warning: | Encountered error during eval:\n` + `\`\`\`${err}\`\`\``);
 						}
 					}
 					break;
@@ -58,7 +59,15 @@ Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``;
 
 				case "antispam":
-					return botFunctions.toggleAntispam();
+					if (permissionFunction.checkPermissions(message)){
+						return botFunctions.toggleAntispam();
+					}
+					break;
+				case "clear":
+					if (permissionFunction.checkPermissions(message)){
+						botFunctions.clearMessages(message);
+					}
+					break;
 
 				case "poll":
 					if (!commandText[1]){ return ('Try /poll <question/options/start/end> [Options...]');}
@@ -102,15 +111,14 @@ Commands ran     : ${commandCount}\`\`\``;
 /results - Used to view results of a poll when a poll is active
 /sayin <content> <delay in minutes> - WaveBot will announce <content> after <delay in minutes> in the channel the command was ran
 \n----- Admin Commands -----\n
-/clrcom - Clear all command massages related to WaveBot from users in the channel this command was ran
-/clear - Clear all WaveBot output from the channel this command was ran
+/clear - Clear all WaveBot output and user input from the channel this command was ran
 /antispam - Toggle the automated removal of bot messages from unwanted channels
 /poll <question/options/default/start/end> [options...] - Used to host a poll
 /eval <javascript code> - Used to run arbitary Javascript Code. USE WITH CAUTION!
 /exit - Exits WaveBot\`\`\``);
 				break;
 				default:
-					return 'Command not found. Try running /help.';
+					return;
 		}
 }
 

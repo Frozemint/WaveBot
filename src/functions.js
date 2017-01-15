@@ -1,4 +1,5 @@
 const config = require('../config.json');
+const bot = require('./bot.js');
 
 const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
 
@@ -11,6 +12,31 @@ function toggleAntispam(){
 	antiSpam = !antiSpam;
 	return ':white_check_mark: | Antispam function has been toggled to: ' + antiSpam;
 }
+
+function findBotMessages(message){
+	if (bot.client.user === message.author) {return true;}
+	for (var i = 0; i < commandArray.length; i++){
+		if (message.content.startsWith(commandArray[i])){ return true;}
+	}
+	return false;
+}
+
+function clearMessages(message){
+	message.channel.fetchMessages({limit: 100}).then(function (m){
+		filtered = m.filter(findBotMessages);
+		try {
+			if (filtered.size >= 2){
+				message.channel.sendMessage('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
+					message.channel.bulkDelete(filtered);
+					sentMessage.edit('Finished deleting ' + filtered.size + ' messages!');
+				});
+			}
+		} catch (e){
+			message.channel.sendMessage('Failed to delete: ' + e);
+		}
+	});
+}
+
 
 function antiSpamFunction (bot, message){
 
@@ -40,5 +66,5 @@ function antiSpamFunction (bot, message){
 module.exports = {
 	antiSpamFunction: antiSpamFunction,
 	toggleAntispam: toggleAntispam,
-	antiSpam
+	clearMessages: clearMessages,
 };

@@ -57,6 +57,6 @@ client.on('message', function(message){
 	}
 })
 
-module.exports = client;
+exports.client = client;
 
 
