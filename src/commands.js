@@ -1,17 +1,9 @@
 const bot = require('./bot.js');
 const botFunctions = require('./functions.js');
+const votingFunctions = require('./voting.js');
 
 //Counters for stats
-var messagesCount = 0;
-var removedMessages = 0;
-var commandCount = 0;
-
-/* Variables for conducting polls */
-var universalSuffrage = false;
-var pollChannelID = '';
-var pollQuestion = "";
-var votersArray = [];
-var optionArray = [];
+var messagesCount = 0,removedMessages = 0, commandCount = 0;
 
 function increaseMessageCounter(){
 	removedMessages++;
@@ -35,6 +27,7 @@ function readBotCommand(client, message){
 					return ' :timer: | You are set! Message will be broadcasted after ' + commandText[1] + ' minutes.';
 				case "exit":
 					client.destroy().then(function() { process.exit(0);});
+					break;
 				case "help":
 					message.author.sendMessage('**Command List for WaveBot**\n'+
 					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
@@ -51,6 +44,7 @@ function readBotCommand(client, message){
 /poll <question/options/default/start/end> [options...] - Used to host a poll
 /eval <javascript code> - Used to run arbitary Javascript Code. USE WITH CAUTION!
 /exit - Exits WaveBot\`\`\``);
+					break;
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as     : ${client.user.username}
 Discord uptime   : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60))} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
@@ -58,10 +52,39 @@ Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.
 Messages tracked : ${messagesCount}
 Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``;
-				
+				case "poll":
+					if (!commandText[1]){ return ('Try /poll <question/options/start/end> [Options...]');}
+					switch (commandText[1].toLowerCase()){
+						case "question": //Two cases here because people keeps adding an s at the end
+						case "questions":
+							return votingFunctions.setQuestion(message.content.substring(commandText[0].length+commandText[1].length+3));
+						case "option":
+						case "options":
+							return votingFunctions.setOptions(commandText);
+						case "defaults":
+						case "default":
+							return votingFunctions.setDefaults(message.channel.id);
+						case "start":
+							return votingFunctions.startPoll(message.channel.id);
+						case "end":
+							finalResult = votingFunctions.endPoll();
+							message.channel.sendCode('asciidoc', finalResult);
+							break;
+						default:
+							return ('Try /poll <question/options/start/end> [Options...]');
+					}
+					break;
+			case "result":
+			case "results":
+				resultString = votingFunctions.printResults();
+				message.channel.sendCode('asciidoc', resultString);
+				break;
+			case "vote":
+				return votingFunctions.castVote(message.channel.id, commandText[1], message.author.id, message.author.username);
+				break;
+
 				default:
 					return 'Command not found. Try running /help.';
-					break;
 		}
 }
 

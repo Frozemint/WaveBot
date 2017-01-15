@@ -44,42 +44,7 @@ function antiSpamFunction (bot, message){
 	}
 }
 
-function findUserVote (user){
-	for (let i = 0; i < voters.length; i++){
-		let value = voters[i].split('|');
-		if (value[1].indexOf(user) > -1){
-			return true;
-		}
-	}
-	return false;
-}
-
-function countUserVote (option){
-	let totalVoters = 0;
-	for (let i = 0; i < voters.length; i++){
-		let value = voters[i].split('|');
-		if (value[0].indexOf(option) > -1){
-			totalVoters++;
-		}
-	}
-	return totalVoters;
-}
-
-function countVoteIdentity (user){
-	let votersIdentity = [];
-	for (let i = 0; i < voters.length; i++){
-		let value = voters[i].split('|');
-		if (value.indexOf(user) > -1){
-			votersIdentity.push(value[2]);
-		}
-	}
-	return votersIdentity.join(', ');
-}
-
 module.exports = {
 	checkPermissions: checkPermissions,
 	antiSpamFunction: antiSpamFunction,
-	findUserVote: findUserVote,
-	countUserVote: countUserVote,
-	countVoteIdentity: countVoteIdentity
 };
