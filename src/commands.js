@@ -33,6 +33,8 @@ function readBotCommand(client, message){
 					stringToAnnounce = stringToAnnounce.replace('\\', '');
 					setTimeout(function(){ message.channel.sendMessage(stringToAnnounce)}, 1000 * 60 * commandText[1]);
 					return ' :timer: | You are set! Message will be broadcasted after ' + commandText[1] + ' minutes.';
+				case "exit":
+					client.destroy().then(function() { process.exit(0);});
 				case "help":
 					message.author.sendMessage('**Command List for WaveBot**\n'+
 					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
