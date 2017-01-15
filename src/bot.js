@@ -34,8 +34,8 @@ client.on('message', function(message){
 	}
 
 	if (message.author.bot === false && message.content[0] === commandPrefix){
-		//
-		output = command.readBotCommand(client, message);
+		
+		output = command.readBotCommand(client, message, message.user);
 		if (output) { message.channel.sendMessage(output);}
 	}
 })

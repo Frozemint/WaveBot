@@ -100,7 +100,7 @@ function castVote(channelID, option, userID, username){
 
 	if (findUserVote(userID) === false){
 		votersArray.push(option + '|' + userID + '|' + username);
-		return ':white_check_mark: | ' + username + ', your vote has been recorded!\nDo /poll results for the latest results!';
+		return ':white_check_mark: | ' + username + ', your vote has been recorded!\nDo /results for the latest results!';
 	} else {
 		return ':no_entry_sign: | You have already voted once!';
 	}

@@ -1,6 +1,7 @@
 const bot = require('./bot.js');
 const botFunctions = require('./functions.js');
 const votingFunctions = require('./voting.js');
+const permissionFunction = require('./permissions.js');
 
 //Counters for stats
 var messagesCount = 0,removedMessages = 0, commandCount = 0;
@@ -26,24 +27,9 @@ function readBotCommand(client, message){
 					setTimeout(function(){ message.channel.sendMessage(stringToAnnounce)}, 1000 * 60 * commandText[1]);
 					return ' :timer: | You are set! Message will be broadcasted after ' + commandText[1] + ' minutes.';
 				case "exit":
-					client.destroy().then(function() { process.exit(0);});
-					break;
-				case "help":
-					message.author.sendMessage('**Command List for WaveBot**\n'+
-					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
-/say <content> - Makes WaveBot type <content> into the text channel the command was ran
-/about - Prints information about WaveBot
-/info - Prints statistics about WaveBot
-/vote <option> - Vote for <option> when a poll is active
-/results - Used to view results of a poll when a poll is active
-\n\n----- Admin Commands -----\n\n
-/sayin <content> <delay in minutes> - WaveBot will announce <content> after <delay in minutes> in the channel the command was ran
-/clrcom - Clear all command massages related to WaveBot from users in the channel this command was ran
-/clear - Clear all WaveBot output from the channel this command was ran
-/antispam - Toggle the automated removal of bot messages from unwanted channels
-/poll <question/options/default/start/end> [options...] - Used to host a poll
-/eval <javascript code> - Used to run arbitary Javascript Code. USE WITH CAUTION!
-/exit - Exits WaveBot\`\`\``);
+					if (permissionFunction.checkPermissions(message)){
+						client.destroy().then(function() { process.exit(0);});
+					}
 					break;
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as     : ${client.user.username}
@@ -54,6 +40,7 @@ Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``;
 				case "poll":
 					if (!commandText[1]){ return ('Try /poll <question/options/start/end> [Options...]');}
+					if (permissionFunction.checkPermissions(message) === false){ return;}
 					switch (commandText[1].toLowerCase()){
 						case "question": //Two cases here because people keeps adding an s at the end
 						case "questions":
@@ -82,7 +69,23 @@ Commands ran     : ${commandCount}\`\`\``;
 			case "vote":
 				return votingFunctions.castVote(message.channel.id, commandText[1], message.author.id, message.author.username);
 				break;
-
+			case "help":
+					message.author.sendMessage('**Command List for WaveBot**\n'+
+					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
+/say <content> - Makes WaveBot type <content> into the text channel the command was ran
+/about - Prints information about WaveBot
+/info - Prints statistics about WaveBot
+/vote <option> - Vote for <option> when a poll is active
+/results - Used to view results of a poll when a poll is active
+\n\n----- Admin Commands -----\n\n
+/sayin <content> <delay in minutes> - WaveBot will announce <content> after <delay in minutes> in the channel the command was ran
+/clrcom - Clear all command massages related to WaveBot from users in the channel this command was ran
+/clear - Clear all WaveBot output from the channel this command was ran
+/antispam - Toggle the automated removal of bot messages from unwanted channels
+/poll <question/options/default/start/end> [options...] - Used to host a poll
+/eval <javascript code> - Used to run arbitary Javascript Code. USE WITH CAUTION!
+/exit - Exits WaveBot\`\`\``);
+				break;
 				default:
 					return 'Command not found. Try running /help.';
 		}
