@@ -2,6 +2,7 @@ const bot = require('./bot.js');
 const botFunctions = require('./functions.js');
 const votingFunctions = require('./voting.js');
 const permissionFunction = require('./permissions.js');
+const jokeCommands = require('./jokecommands.js');
 
 //Counters for stats
 var messagesCount = 0,removedMessages = 0, commandCount = 0;
@@ -40,6 +41,17 @@ function readBotCommand(client, message){
 						client.destroy().then(function() { process.exit(0);});
 					}
 					break;
+				case "addcom":
+					if (permissionFunction.checkPermissions(message) && commandText[0] && commandText[1]){
+						return jokeCommands.addCustomCommand(commandText[1], message.content.substring(commandText[0].length + commandText[1].length + 2));
+					}
+					break;
+				case "delcom":
+					if (permissionFunction.checkPermissions(message) && commandText[1]){
+						return jokeCommands.removeCustomCommand(commandText[1]);
+					}
+					break;
+
 				case "eval":
 					if (permissionFunction.checkPermissions(message)){
 						try {
@@ -118,7 +130,9 @@ Commands ran     : ${commandCount}\`\`\``;
 /exit - Exits WaveBot\`\`\``);
 				break;
 				default:
-					return;
+					//If typed command does not match anything, search the joke commands
+					return jokeCommands.readJokeCommand(commandText[0]);
+					break;
 		}
 }
 
