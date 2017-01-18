@@ -5,7 +5,7 @@ const permissionFunction = require('./permissions.js');
 const jokeCommands = require('./jokecommands.js');
 
 //Counters for stats
-var messagesCount = 0,removedMessages = 0, commandCount = 0;
+var messagesCount = removedMessages = commandCount = 0;
 
 function increaseRemovedCounter(){
 	removedMessages++;
@@ -28,14 +28,17 @@ function readBotCommand(client, message){
 		switch(commandText[0].toLowerCase()){
 				case "ping":
 					return '*waves back*';
+					break;
 				case "say":
 					if (!commandText[1]){ return ':warning: | You need to tell me what to say.';}
 					return message.content.substring(commandText[0].length+1);
+					break;
 				case "sayin":
 					stringToAnnounce = message.content.substring(commandText[0].length + commandText[1].length + 2);
 					stringToAnnounce = stringToAnnounce.replace('\\', '');
 					setTimeout(function(){ message.channel.sendMessage(stringToAnnounce)}, 1000 * 60 * commandText[1]);
 					return ' :timer: | You are set! Message will be broadcasted after ' + commandText[1] + ' minutes.';
+					break;
 				case "exit":
 					if (permissionFunction.checkPermissions(message)){
 						client.destroy().then(function() { process.exit(0);});

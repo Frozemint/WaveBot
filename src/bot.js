@@ -4,7 +4,7 @@ const botFunction = require('./functions.js');
 const client = new Discord.Client({autoReconnect: true});
 const config = require('../config.json');
 
-const commandPrefix = config.commandPrefix;
+var commandPrefix = config.commandPrefix;
 
 client.once("ready", () => {
 	//This is run when the bot is ready in discord.
