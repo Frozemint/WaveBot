@@ -50,8 +50,8 @@ function antiSpamFunction (bot, message){
 
 	Message removal is not executed if the checks above are failed at any point.
 	*/
-	tempMessage = message.content.toLowerCase();
-	regex = new RegExp(whiteListArray.join("|"), "im");
+	var tempMessage = message.content.toLowerCase();
+	var regex = new RegExp(whiteListArray.join("|"), "im");
 	if (antiSpam === true && message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && message.author != bot.user && tempMessage.match(regex) === null && botOnlyServers.indexOf(message.guild.id) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
 		return true;
