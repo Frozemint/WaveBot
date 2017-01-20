@@ -12,10 +12,10 @@ process.on('uncaughtException', function(err){
 	var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 	console.log('Uncaught exception at time: ' + Date());
 	bot.client.destroy();
-	errorLog.write('BEGIN ERROR LOG at time ' + Date() + '\n');
-	errorLog.write((err && err.stack) ? err.stack : err);
-	errorLog.end('\nEnd of Error Log at time ' + Date() + '\n\n');
-	errorLog.on('finish', function(){
+	errorLog.write('BEGIN ERROR LOG at time ' + Date() + '\n')
+	.write((err && err.stack) ? err.stack : err)
+	.end('\nEnd of Error Log at time ' + Date() + '\n\n')
+	.on('finish', function(){
 		process.exit(1);
 	});
 });
