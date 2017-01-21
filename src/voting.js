@@ -9,9 +9,9 @@ function setQuestion(question){
 
 function setOptions(array){
 	if (2 > array.length){
-		return ':warning: | You need to specify at least 2 options.';
+		return ':x: | You need to specify at least 2 options.';
 	} else if (universalSuffrage === true){
-		return ':warning: | You cannot change voting options while poll is running!';
+		return ':x: | You cannot change voting options while poll is running!';
 	}
 	optionArray = array.slice(2, array.length);
 	return ':white_check_mark: | Options of poll set to: ' + optionArray.join(' | ');
@@ -27,18 +27,18 @@ function startPoll(channelID){
 	if (universalSuffrage === false && optionArray.length >= 2 && pollQuestion.length > 0){
 		votersArray = [], pollChannelID = channelID, universalSuffrage = true;
 	} else if (universalSuffrage === true){
-		return ':warning: | A poll is already running!';
+		return ':x: | A poll is already running!';
 	} else if (optionArray < 2){
-		return ':warning: | You need to specify the options for the poll.';
+		return ':x: | You need to specify the options for the poll.';
 	} else if (pollQuestion === 0){
-		return (':warning: | You need to specify the question for the poll.');
+		return (':x: | You need to specify the question for the poll.');
 	}
 	return ':mega: | Started a poll on: ' + pollQuestion + '\n Vote with /vote <' + optionArray.join(' | ')+ '>!';
 }
 
 function endPoll(){
 	if (universalSuffrage === false){
-		return 'There is no poll currently running!';
+		return ':negative_squared_cross_mark: | There is no poll currently running!';
 	}
 	if (universalSuffrage === true){ //Check if polls is running before closing it.
 		resultString = `FINAL VOTING RESULTS ON: ${pollQuestion}\n\n`;
@@ -84,7 +84,7 @@ function countVoteIdentity (user){
 }
 
 function printResults(finalResult){
-	if (universalSuffrage === false){ return 'There are currently no polls in progress.';}
+	if (universalSuffrage === false){ return ' :negative_squared_cross_mark: | There are currently no polls in progress.';}
 	resultString = `VOTING RESULTS ON: ${pollQuestion}\n\n`;
 	for (var i = 0; i < optionArray.length; i++){
 		resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;

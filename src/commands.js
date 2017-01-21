@@ -59,7 +59,7 @@ function readBotCommand(client, message){
 					if (permissionFunction.checkPermissions(message)){
 						try {
 							code = message.content.substring(commandText[0].length+1);
-							message.channel.sendCode('xl', eval(code));
+							message.channel.sendMessage(`:white_check_mark: | Output:\n` + `\`\`\`${eval(code)}\`\`\``);
 						} catch (err){
 							message.channel.sendMessage(`:warning: | Encountered error during eval:\n` + `\`\`\`${err}\`\`\``);
 						}

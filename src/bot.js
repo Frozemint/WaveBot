@@ -53,7 +53,7 @@ client.on('message', function(message){
 	if (message.author.bot === false && message.content[0] === commandPrefix){
 		command.increaseCommandCounter();
 		output = command.readBotCommand(client, message, message.user);
-		if (output) { message.channel.sendMessage(output);}
+		if (output) { message.channel.sendMessage('<@' + message.author.id + '> | ' + output);}
 	}
 })
 
