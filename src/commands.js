@@ -68,7 +68,7 @@ function readBotCommand(client, message){
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as     : ${client.user.username}
 Discord uptime   : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60)) % 24} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
-Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.floor(process.uptime() / (60 * 60))} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
+Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24) % 24)} days ${Math.floor(process.uptime() / (60 * 60))} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
 Messages tracked : ${messagesCount}
 Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``;
@@ -109,8 +109,13 @@ Commands ran     : ${commandCount}\`\`\``;
 					break;
 			case "result":
 			case "results":
-				resultString = votingFunctions.printResults();
-				message.channel.sendCode('asciidoc', resultString);
+				if (!commandText[1]){
+					resultString = votingFunctions.printResults();
+					message.channel.sendCode('asciidoc', resultString);
+				} else if (commandText[1] === 'raw'){
+					resultString = votingFunctions.printRawResults();
+					message.channel.sendMessage('Raw data dump on voting results:\n' + `\`\`\` ${resultString}\`\`\``);
+				}
 				break;
 			case "vote":
 				return votingFunctions.castVote(message.channel.id, commandText[1], message.author.id, message.author.username);

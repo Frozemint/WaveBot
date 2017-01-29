@@ -65,25 +65,25 @@ function countUserVote (option){
 	let totalVoters = 0;
 	for (let i = 0; i < votersArray.length; i++){
 		let value = votersArray[i].split('|');
-		if (value[0].indexOf(option) > -1){
+		if (value[0] === option){
 			totalVoters++;
 		}
 	}
 	return totalVoters;
 }
 
-function countVoteIdentity (user){
+function countVoteIdentity (option){
 	let votersIdentity = [];
 	for (let i = 0; i < votersArray.length; i++){
-		let value = votersArray[i].split('|');
-		if (value.indexOf(user) > -1){
+		let value = votersArray[i].split('|'); //Split votersArray into an array, each holding option|voterID|voterUserName 
+		if (value.indexOf(option) > -1){
 			votersIdentity.push(value[2]);
 		}
 	}
 	return votersIdentity.join(', ');
 }
 
-function printResults(finalResult){
+function printResults(){
 	if (universalSuffrage === false){ return ' :negative_squared_cross_mark: | There are currently no polls in progress.';}
 	resultString = `VOTING RESULTS ON: ${pollQuestion}\n\n`;
 	for (var i = 0; i < optionArray.length; i++){
@@ -91,6 +91,10 @@ function printResults(finalResult){
 		resultString += `\n•${optionArray[i]} Voters:: [${countVoteIdentity(optionArray[i])}]`;
 	}
 	return resultString;
+}
+
+function printRawResults(){
+	return votersArray.join(', \n');
 }
 
 function castVote(channelID, option, userID, username){
@@ -119,5 +123,6 @@ module.exports = {
 	castVote: castVote,
 	endPoll: endPoll,
 	optionArray: optionArray,
-	pollQuestion: pollQuestion
+	pollQuestion: pollQuestion,
+	printRawResults: printRawResults
 }
