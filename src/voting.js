@@ -43,18 +43,17 @@ function endPoll(){
 	if (universalSuffrage === true){ //Check if polls is running before closing it.
 		resultString = `FINAL VOTING RESULTS ON: ${pollQuestion}\n\n`;
 		for (i = 0; i < optionArray.length; i++){
-			resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;
-			resultString += `\n•${optionArray[i]} Voters:: [${countVoteIdentity(optionArray[i])}]`;
+			resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
 		}
 		universalSuffrage = false;
 	} 
 	return resultString;
 }
 
-function findUserVote (user){
+function findUserVote (userID){
 	for (let i = 0; i < votersArray.length; i++){
 		let value = votersArray[i].split('|');
-		if (value[1].indexOf(user) > -1){
+		if (value[1] === userID){
 			return true;
 		}
 	}
@@ -76,7 +75,7 @@ function countVoteIdentity (option){
 	let votersIdentity = [];
 	for (let i = 0; i < votersArray.length; i++){
 		let value = votersArray[i].split('|'); //Split votersArray into an array, each holding option|voterID|voterUserName 
-		if (value.indexOf(option) > -1){
+		if (value[0] === option){
 			votersIdentity.push(value[2]);
 		}
 	}
@@ -84,7 +83,7 @@ function countVoteIdentity (option){
 }
 
 function printResults(){
-	if (universalSuffrage === false){ return ' :negative_squared_cross_mark: | There are currently no polls in progress.';}
+	if (universalSuffrage === false){ return 'There are currently no polls in progress.';}
 	resultString = `VOTING RESULTS ON: ${pollQuestion}\n\n`;
 	for (var i = 0; i < optionArray.length; i++){
 		resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
