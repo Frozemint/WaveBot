@@ -9,12 +9,13 @@ const util = require('util');
 process.title = 'wavebot';
 
 process.on('uncaughtException', function(err){
+	console.log(err);
 	var errorLog = fs.createWriteStream('error.log', {flags: 'a'});
 	console.log('Uncaught exception at time: ' + Date());
 	bot.client.destroy();
-	errorLog.write('BEGIN ERROR LOG at time ' + Date() + '\n')
-	.write((err && err.stack) ? err.stack : err)
-	.end('\nEnd of Error Log at time ' + Date() + '\n\n')
+	errorLog.write('BEGIN ERROR LOG at time ' + Date() + '\n' + 
+		(err && err.stack) ? err.stack : err + 
+		'\nEnd of Error Log at time ' + Date() + '\n\n')
 	.on('finish', function(){
 		process.exit(1);
 	});
