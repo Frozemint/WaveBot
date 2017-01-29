@@ -9,7 +9,8 @@
   "author": "Johnathan Wong (Nami)",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^10.0.1"
+    "discord.js": "^10.0.1",
+    "node-opus": "^0.2.4"
   },
   "devDependencies": {
     "node-opus": "^0.2.2"
