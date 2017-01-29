@@ -87,8 +87,7 @@ function printResults(){
 	if (universalSuffrage === false){ return ' :negative_squared_cross_mark: | There are currently no polls in progress.';}
 	resultString = `VOTING RESULTS ON: ${pollQuestion}\n\n`;
 	for (var i = 0; i < optionArray.length; i++){
-		resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes`;
-		resultString += `\n•${optionArray[i]} Voters:: [${countVoteIdentity(optionArray[i])}]`;
+		resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
 	}
 	return resultString;
 }
