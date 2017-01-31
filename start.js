@@ -14,7 +14,7 @@ process.on('uncaughtException', function(err){
 	console.log('Uncaught exception at time: ' + Date());
 
 	errorLog.write('Time now: ' + Date() + '\n' + ((err && err.stack) ? err.stack : err) + '\n');
-	errorLog.end('\nEnd of error log at time: ' + Date());
+	errorLog.end('\nEnd of error log at time: ' + Date() + '\n');
 	errorLog.on('close', function() { bot.client.destroy(); process.exit(1);});
 });
 
