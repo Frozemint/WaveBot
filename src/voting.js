@@ -96,7 +96,7 @@ function printRawResults(){
 }
 
 function castVote(channelID, option, userID, username){
-	if (universalSuffrage === false){ return 'There are currently no polls in progress';}
+	if (universalSuffrage === false){ return ':x:| There are currently no polls in progress!';}
 	if (channelID != pollChannelID) { return ' :no_entry_sign: | Please vote in the channel where the poll is hosted.';}
 	if (!option || optionArray.indexOf(option) === -1) { return ':negative_squared_cross_mark: | Your options for voting are: ' + optionArray.join(' | ');}
 

@@ -45,6 +45,8 @@ client.on('message', function(message){
 	if (message.channel instanceof Discord.DMChannel) { message.author.sendMessage('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
 	command.increaseMessageCounter();
 
+	if (message.author.bot === true) { command.increaseBotMessageCounter();}
+	
 	if (botFunction.antiSpamFunction(client, message) === true){
 		message.delete();
 		command.increaseRemovedCounter();

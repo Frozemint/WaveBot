@@ -5,7 +5,7 @@ const permissionFunction = require('./permissions.js');
 const jokeCommands = require('./jokecommands.js');
 
 //Counters for stats
-var messagesCount = removedMessages = commandCount = 0;
+var messagesCount = removedMessages = commandCount = totalBotMessages = 0;
 
 function increaseRemovedCounter(){
 	removedMessages++;
@@ -17,6 +17,10 @@ function increaseMessageCounter(){
 
 function increaseCommandCounter(){
 	commandCount++;
+}
+
+function increaseBotMessageCounter(){
+	totalBotMessages++;
 }
 
 function readBotCommand(client, message){
@@ -67,11 +71,12 @@ function readBotCommand(client, message){
 					break;
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as     : ${client.user.username}
-Discord uptime   : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60)) % 24} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
-Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.floor(process.uptime() / (60 * 60) % 24)} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
-Messages tracked : ${messagesCount}
-Removed messages : ${removedMessages}
-Commands ran     : ${commandCount}\`\`\``;
+Discord uptime     : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60)) % 24} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
+Process uptime     : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.floor(process.uptime() / (60 * 60) % 24)} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
+Messages tracked   : ${messagesCount}
+Removed messages   : ${removedMessages}
+Total Bot Messages : ${totalBotMessages}
+Commands ran       : ${commandCount}\`\`\``;
 
 				case "antispam":
 					if (permissionFunction.checkPermissions(message)){
@@ -148,6 +153,6 @@ module.exports = {
 	readBotCommand: readBotCommand,
 	increaseRemovedCounter: increaseRemovedCounter,
 	increaseMessageCounter: increaseMessageCounter,
-	increaseCommandCounter: increaseCommandCounter
-
+	increaseCommandCounter: increaseCommandCounter,
+	increaseBotMessageCounter: increaseBotMessageCounter
 }
