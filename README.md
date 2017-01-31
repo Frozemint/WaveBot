@@ -5,7 +5,7 @@ It adds useful features to the official Discord server of the guild.
 
 # Features
 - Automated removal of bot messages from unwanted text channels
-- Poll users with a question, with the option to vote YES, NO, or ABSTAIN.
+- Poll users with a question, with unlimited options for voting
 
 # Commands
 
@@ -15,19 +15,21 @@ Grant users permission to run admin only commands by assigning them ```ADMINISTR
 - /say [text] - The Bot writes [text] into text channel
 - /help - Shows a helpful list of command in Discord
 - /info - Shows info about WaveBot, including some interesting statistics like uptime
-- /vote [yes/no/abstain] - Vote your selected option when a poll is underway
+- /vote [option] - Vote your selected option when a poll is underway, options are set by admins when creating the poll
 - /results - Display voting results when a poll is underway
+- /[custom command] - Display the pre-defined response for custom commands
 
 *Admin only commands*
 
-- /clear - Clear all the output by WaveBot in the channel this command was typed in.
-- /clrcom - Clear all user commands to WaveBot in the channel this command was typed in.
+- /clear - Clear all the input/output directed to/by WaveBot in the channel this command was typed in.
 - /antispam - Toggle antispam for automatically deleting bot outputs in non-bot channels.
 - /sayin [Delay in Minute] [Text] - After delay, writes [Text] to the text channel this command was typed in.
  * Note that \ characters are escaped, use them to prevent spamming @everyone by writing @\everyone
 - /eval [Javascript Code] - Execute arbitrary javascript code. USE WITH CAUTION.
-- /poll [Question] - Start a poll with the typed question as title. If a poll is already running, running /poll ends the poll.
+- /poll [parameters...] - Used to setup a poll and start it. Follow the instructions given by WaveBot
 - /exit - Exits the bot.
+- /addcom [command] [response] - Add and save a custom command with the response WaveBot should output when the command is ran
+- /delcom [command] - Delete a custom command
 
 
 # Config
@@ -42,6 +44,6 @@ designated bot only channel IDs in the array.
 
 # Installation
 
-After this repo is downloaded, do ```npm install```, edit the ```auth.json``` file with the token of your bot's account,
-and use ```node start.js``` to start the bot. Also checkout ```config.json``` if you want to use the antispam function.
+After this repo is downloaded, do ```npm install```, Create a ```auth.json``` file with a field called "token" with the value of your bot's account token,
+and use ```node start.js``` to start the bot.
 
