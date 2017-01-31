@@ -9,10 +9,6 @@ function readJokeCommand(message){
 		console.log(Date() + ': Found a match in defined custom commands.');
 		return responseArray[message];
 	}
-	switch (message.toLowerCase()){
-		case "jaklslaugh":
-			
-	}
 }
 
 function addCustomCommand(command, response){

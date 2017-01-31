@@ -68,7 +68,7 @@ function readBotCommand(client, message){
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as     : ${client.user.username}
 Discord uptime   : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60)) % 24} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
-Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24) % 24)} days ${Math.floor(process.uptime() / (60 * 60))} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
+Process uptime   : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.floor(process.uptime() / (60 * 60) % 24)} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
 Messages tracked : ${messagesCount}
 Removed messages : ${removedMessages}
 Commands ran     : ${commandCount}\`\`\``;

@@ -23,12 +23,12 @@ function findBotMessages(message){
 
 function clearMessages(message){
 	message.channel.fetchMessages({limit: 100}).then(function (m){
-		filtered = m.filter(findBotMessages);
+		let filtered = m.filter(findBotMessages);
 		try {
 			if (filtered.size >= 2){
 				message.channel.sendMessage('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
 					message.channel.bulkDelete(filtered);
-					sentMessage.edit('Finished deleting ' + filtered.size + ' messages!');
+					sentMessage.edit(':white_check_mark: | Finished deleting ' + filtered.size + ' messages!');
 				});
 			}
 		} catch (e){
