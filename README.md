@@ -45,3 +45,11 @@ designated bot only channel IDs in the array.
 After this repo is downloaded, do ```npm install```, edit the ```auth.json``` file with the token of your bot's account,
 and use ```node start.js``` to start the bot. Also checkout ```config.json``` if you want to use the antispam function.
 
+# Additional Information
+
+WaveBot will NEVER remove user messages in the antispam function; WaveBot only deletes user messages if an admin runs the ```/clear``` command, which clear WaveBot commands entered by users.
+
+WaveBot also collects Username/nicknames for logging purposes. This information is usually used to debug the bot, such as diagnosing user permission problems. When you run the ```/vote``` command, your username and user ID is also collected for vote counting and to perform checks against voting more than twice. This information is retained even after a poll closes so votes may be checked even after the poll is close. The retained information is cleared when another poll is started.
+ 
+Contact your server admin if you have any inquiries or concerns about the use of such data.
+
