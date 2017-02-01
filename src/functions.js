@@ -6,6 +6,7 @@ const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '
 const whiteListArray = config.whitelistWords;
 const botOnlyChannels = config.botChannel;
 const botOnlyServers = config.checkServers;
+
 var antiSpam = true;
 
 function toggleAntispam(){
