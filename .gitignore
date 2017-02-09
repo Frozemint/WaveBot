@@ -1,5 +1,4 @@
 auth.json
 config.json
-error.log
-output.txt
-error.txt
+*.log
+*.txt
