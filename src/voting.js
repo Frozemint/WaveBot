@@ -1,6 +1,8 @@
 
 /* Variables for conducting polls */
+const Discord = require('discord.js');
 var universalSuffrage = false, pollChannelID = '', pollQuestion = "", votersArray = [], optionArray = [];
+var resultString;
 
 function setQuestion(question){
 	pollQuestion = question;
@@ -84,6 +86,7 @@ function countVoteIdentity (option){
 
 function printResults(){
 	if (universalSuffrage === false){ return 'There are currently no polls in progress.';}
+
 	resultString = `VOTING RESULTS ON: ${pollQuestion}\n\n`;
 	for (var i = 0; i < optionArray.length; i++){
 		resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;

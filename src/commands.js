@@ -1,3 +1,4 @@
+const Discord = require('discord.js');
 const bot = require('./bot.js');
 const botFunctions = require('./functions.js');
 const votingFunctions = require('./voting.js');
@@ -70,7 +71,7 @@ function readBotCommand(client, message){
 					}
 					break;
 				case "info":
-					return `Information on WaveBot:\n` + `\`\`\`Logged in as     : ${client.user.username}
+					return `Information on WaveBot:\n` + `\`\`\`Logged in as       : ${client.user.username}
 Discord uptime     : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60)) % 24} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
 Process uptime     : ${Math.floor(process.uptime() / (60 * 60 * 24))} days ${Math.floor(process.uptime() / (60 * 60) % 24)} hours ${Math.floor(process.uptime() / 60)% 60} minutes ${Math.floor(process.uptime() % 60)} seconds
 Messages tracked   : ${messagesCount}
@@ -121,6 +122,14 @@ Commands ran       : ${commandCount}\`\`\``;
 					resultString = votingFunctions.printRawResults();
 					message.channel.sendMessage('Raw data dump on voting results:\n' + `\`\`\` ${resultString}\`\`\``);
 				}
+				break;
+
+			case "debug":
+				/*const embed = new Discord.RichEmbed()
+      .setTitle('Voting Results:')
+      .setAuthor('WaveBot')
+      .addField('Memes', 'Wow. Such Embed. Much Rich');
+				message.channel.sendEmbed(embed);*/
 				break;
 			case "vote":
 				return votingFunctions.castVote(message.channel.id, commandText[1], message.author.id, message.author.username);
