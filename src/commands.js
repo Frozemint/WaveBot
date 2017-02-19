@@ -117,7 +117,7 @@ Commands ran       : ${commandCount}\`\`\``;
 			case "results":
 				if (!commandText[1]){
 					resultString = votingFunctions.printResults();
-					message.channel.sendCode('asciidoc', resultString);
+					message.channel.sendCode('diff', resultString);
 				} else if (commandText[1] === 'raw'){
 					resultString = votingFunctions.printRawResults();
 					message.channel.sendMessage('Raw data dump on voting results:\n' + `\`\`\` ${resultString}\`\`\``);

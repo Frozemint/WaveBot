@@ -1,7 +1,7 @@
 
 /* Variables for conducting polls */
 const Discord = require('discord.js');
-var universalSuffrage = false, pollChannelID = '', pollQuestion = "", votersArray = [], optionArray = [];
+var universalSuffrage = false, pollChannelID = '', pollQuestion = "", votersArray = [], optionArray = [], highestVote = 0;
 var resultString;
 
 function setQuestion(question){
@@ -32,21 +32,35 @@ function startPoll(channelID){
 		return ':x: | A poll is already running!';
 	} else if (optionArray < 2){
 		return ':x: | You need to specify the options for the poll.';
-	} else if (pollQuestion === 0){
+	} else if (pollQuestion === ""){
 		return (':x: | You need to specify the question for the poll.');
 	}
 	return ':mega: | Started a poll on: ' + pollQuestion + '\n Vote with /vote <' + optionArray.join(' | ')+ '>!';
 }
 
+function highlightOption(votes){
+	if (votes >= highestVote && highestVote != 0) {return "-";}
+	return "+";
+}
+
 function endPoll(){
 	if (universalSuffrage === false){
-		return ':negative_squared_cross_mark: | There is no poll currently running!';
+		return 'There is no poll currently running!';
 	}
 	if (universalSuffrage === true){ //Check if polls is running before closing it.
-		resultString = `FINAL VOTING RESULTS ON: ${pollQuestion}\n\n`;
+		resultString = `! FINAL VOTING RESULTS ON: ${pollQuestion} !\n\n`;
+
+		//Find out highest voted option
 		for (i = 0; i < optionArray.length; i++){
-			resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
+			if (countUserVote(optionArray[i]) >= highestVote && highestVote > 0){
+				highestVote = countUserVote(optionArray[i]);
+			}
 		}
+
+		for (i = 0; i < optionArray.length; i++){
+			resultString += `\n${highlightOption(countUserVote(optionArray[i]))}${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
+		}
+
 		universalSuffrage = false;
 	} 
 	return resultString;
@@ -87,9 +101,10 @@ function countVoteIdentity (option){
 function printResults(){
 	if (universalSuffrage === false){ return 'There are currently no polls in progress.';}
 
-	resultString = `VOTING RESULTS ON: ${pollQuestion}\n\n`;
-	for (var i = 0; i < optionArray.length; i++){
-		resultString += `\n•${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
+	resultString = `!== VOTING RESULTS ON: ${pollQuestion} ===!\n\n`;
+
+	for (i = 0; i < optionArray.length; i++){
+		resultString += `\n${highlightOption(countUserVote(optionArray[i]))}${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
 	}
 	return resultString;
 }
@@ -105,6 +120,11 @@ function castVote(channelID, option, userID, username){
 
 	if (findUserVote(userID) === false){
 		votersArray.push(option + '|' + userID + '|' + username);
+		for (i = 0; i < optionArray.length; i++){
+			if (countUserVote(option) >= highestVote){
+				highestVote = countUserVote(option);
+			}
+		}
 		return ':white_check_mark: | ' + username + ', your vote has been recorded!\nDo /results for the latest results!';
 	} else {
 		return ':no_entry_sign: | You have already voted once!';
