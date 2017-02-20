@@ -48,7 +48,7 @@ function endPoll(){
 		return 'There is no poll currently running!';
 	}
 	if (universalSuffrage === true){ //Check if polls is running before closing it.
-		resultString = `! FINAL VOTING RESULTS ON: ${pollQuestion} !\n\n`;
+		resultString = `--- FINAL VOTING RESULTS ON: ${pollQuestion} ---\n\n`;
 
 		//Find out highest voted option
 		for (i = 0; i < optionArray.length; i++){
@@ -58,7 +58,7 @@ function endPoll(){
 		}
 
 		for (i = 0; i < optionArray.length; i++){
-			resultString += `\n${highlightOption(countUserVote(optionArray[i]))}${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
+			resultString += `\n${highlightOption(countUserVote(optionArray[i]))} ${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
 		}
 
 		universalSuffrage = false;
@@ -101,10 +101,10 @@ function countVoteIdentity (option){
 function printResults(){
 	if (universalSuffrage === false){ return 'There are currently no polls in progress.';}
 
-	resultString = `!== VOTING RESULTS ON: ${pollQuestion} ===!\n\n`;
+	resultString = `---== VOTING RESULTS ON: ${pollQuestion} ==---\n\n`;
 
 	for (i = 0; i < optionArray.length; i++){
-		resultString += `\n${highlightOption(countUserVote(optionArray[i]))}${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
+		resultString += `\n${highlightOption(countUserVote(optionArray[i]))} ${optionArray[i]}:: ${countUserVote(optionArray[i])} votes [${countVoteIdentity(optionArray[i])}]`;
 	}
 	return resultString;
 }
