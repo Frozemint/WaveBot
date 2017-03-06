@@ -36,7 +36,8 @@ function readBotCommand(client, message){
 					break;
 				case "say":
 					if (!commandText[1]){ return ':warning: | You need to tell me what to say.';}
-					return message.content.substring(commandText[0].length+1);
+					message.channel.sendMessage(message.content.substring(commandText[0].length+1));
+					//return message.content.substring(commandText[0].length+1);
 					break;
 				case "sayin":
 					stringToAnnounce = message.content.substring(commandText[0].length + commandText[1].length + 2);
@@ -153,7 +154,7 @@ Commands ran       : ${commandCount}\`\`\``;
 				break;
 				default:
 					//If typed command does not match anything, search the joke commands
-					return jokeCommands.readJokeCommand(commandText[0]);
+					return jokeCommands.readJokeCommand(commandText);
 					break;
 		}
 }

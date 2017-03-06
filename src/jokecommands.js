@@ -5,9 +5,18 @@ var responseArray = require('./customcommands.json');
 
 
 function readJokeCommand(message){
-	if(responseArray[message]){
+	//message is just commandtext minus the command prefix
+	if(responseArray[message[0]]){
 		console.log(Date() + ': Found a match in defined custom commands.');
 		return responseArray[message];
+	}
+	switch(message[0].toLowerCase()){
+		case "meme":
+			var memeVictim = message[1];
+			return '<@!226535465149267978>, ' + memeVictim + ' wants to be memed!';
+			break;
+		default:
+			break;
 	}
 }
 
