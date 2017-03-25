@@ -23,7 +23,7 @@ function readJokeCommand(message){
 function addCustomCommand(command, response){
 	responseArray[command] = response;
 	console.log('ResponseArray is now ' + JSON.stringify(responseArray));
-	fs.writeFile('./src/customcommands.json', JSON.stringify(responseArray), function(err){
+	fs.writeFile('../src/customcommands.json', JSON.stringify(responseArray), function(err){
 		if (err) return console.log(err);
 		console.log('Writing to file.');
 	});
@@ -34,7 +34,7 @@ function removeCustomCommand(command){
 	if (responseArray[command]){
 		delete responseArray[command];
 		console.log('ResponseArray is now ' + JSON.stringify(responseArray));
-		fs.writeFile('./src/customcommands.json', JSON.stringify(responseArray), function(err){
+		fs.writeFile('../src/customcommands.json', JSON.stringify(responseArray), function(err){
 		if (err) return console.log(err);
 		console.log('Writing to file.');
 	});
