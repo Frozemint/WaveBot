@@ -2,3 +2,4 @@ auth.json
 config.json
 *.log
 *.txt
+*.json
