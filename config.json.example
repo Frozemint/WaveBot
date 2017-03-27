@@ -1,0 +1,6 @@
+{
+	"commandPrefix": "/",
+	"whitelistWords": [""],
+	"botChannel": [""],
+	"checkServers":[""]
+}
