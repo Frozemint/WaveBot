@@ -52,7 +52,7 @@ function readBotCommand(client, message){
 					break;
 				case "addcom":
 					if (permissionFunction.checkPermissions(message) && commandText[0] && commandText[1]){
-						return jokeCommands.addCustomCommand(commandText[1], message.content.substring(commandText[0].length + commandText[1].length + 2));
+						return jokeCommands.addCustomCommand(message, commandText[1], message.content.substring(commandText[0].length + commandText[1].length + 2));
 					}
 					break;
 				case "delcom":
@@ -123,14 +123,6 @@ Commands ran       : ${commandCount}\`\`\``;
 					resultString = votingFunctions.printRawResults();
 					message.channel.sendMessage('Raw data dump on voting results:\n' + `\`\`\` ${resultString}\`\`\``);
 				}
-				break;
-
-			case "debug":
-				/*const embed = new Discord.RichEmbed()
-      .setTitle('Voting Results:')
-      .setAuthor('WaveBot')
-      .addField('Memes', 'Wow. Such Embed. Much Rich');
-				message.channel.sendEmbed(embed);*/
 				break;
 			case "vote":
 				return votingFunctions.castVote(message.channel.id, commandText[1], message.author.id, message.author.username);
