@@ -42,13 +42,6 @@ client.on('error', function(error){
 
 
 client.on('message', function(message){
-	var prob = Math.random();
-	const letters = ["🇼", "🇦", "🇭", "🇬", "🇽", "🇵", "🇨", "🇮"];
-	if (Math.random() > 0.9){
-		for (var i = 0; letters.length > i; i++){
-			message.react(letters[i]);
-		}
-	}
 	if (message.channel instanceof Discord.DMChannel) { message.author.sendMessage('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
 	command.increaseMessageCounter();
 
