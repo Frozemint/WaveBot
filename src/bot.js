@@ -42,6 +42,11 @@ client.on('error', function(error){
 
 
 client.on('message', function(message){
+
+	if (Math.random() > 0.8){
+		message.react("🥚");
+	}
+
 	if (message.channel instanceof Discord.DMChannel) { message.author.sendMessage('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
 	command.increaseMessageCounter();
 
