@@ -35,16 +35,12 @@ client.on('error', function(error){
 	console.log(Date() + ': Discord.js encountered a connection error - ' + error);
 });
 
-/*client.on('debug', function(info){
-	//Emitted by discord.js on a connection error
-	console.log(Date() + ': Debug info from discord:  ' + info);
-});*/
-
 
 client.on('message', function(message){
 
 	if (Math.random() > 0.8){
 		message.react("🥚");
+		message.react("🐰");
 	}
 
 	if (message.channel instanceof Discord.DMChannel) { message.author.sendMessage('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.

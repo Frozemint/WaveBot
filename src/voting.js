@@ -15,6 +15,8 @@ function setOptions(array){
 	} else if (universalSuffrage === true){
 		return ':x: | You cannot change voting options while poll is running!';
 	}
+
+
 	optionArray = array.slice(2, array.length);
 	return ':white_check_mark: | Options of poll set to: ' + optionArray.join(' | ');
 }
@@ -62,7 +64,7 @@ function endPoll(){
 		}
 
 		universalSuffrage = false;
-	} 
+	}
 	return resultString;
 }
 
@@ -90,7 +92,7 @@ function countUserVote (option){
 function countVoteIdentity (option){
 	let votersIdentity = [];
 	for (let i = 0; i < votersArray.length; i++){
-		let value = votersArray[i].split('|'); //Split votersArray into an array, each holding option|voterID|voterUserName 
+		let value = votersArray[i].split('|'); //Split votersArray into an array, each holding option|voterID|voterUserName
 		if (value[0] === option){
 			votersIdentity.push(value[2]);
 		}
