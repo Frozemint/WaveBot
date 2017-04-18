@@ -16,8 +16,8 @@ function setOptions(array){
 		return ':x: | You cannot change voting options while poll is running!';
 	}
 
-
 	optionArray = array.slice(2, array.length);
+	optionArray = optionArray.filter(function(n) {return n});
 	return ':white_check_mark: | Options of poll set to: ' + optionArray.join(' | ');
 }
 
