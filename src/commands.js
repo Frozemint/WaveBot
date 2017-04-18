@@ -37,13 +37,12 @@ function readBotCommand(client, message){
 				case "say":
 					if (!commandText[1]){ return ':warning: | You need to tell me what to say.';}
 					message.channel.sendMessage(message.content.substring(commandText[0].length+1));
-					//return message.content.substring(commandText[0].length+1);
 					break;
 				case "sayin":
 					stringToAnnounce = message.content.substring(commandText[0].length + commandText[1].length + 2);
 					stringToAnnounce = stringToAnnounce.replace('\\', '');
 					setTimeout(function(){ message.channel.sendMessage(stringToAnnounce)}, 1000 * 60 * commandText[1]);
-					return ' :timer: | You are set! Message will be broadcasted after ' + commandText[1] + ' minutes.';
+					return ' :timer: | You are all set! Message will be broadcasted after ' + commandText[1] + ' minutes.';
 					break;
 				case "exit":
 					if (permissionFunction.checkPermissions(message)){

@@ -7,7 +7,6 @@ var responseArray = require('../src/customcommands.json');
 
 function readJokeCommand(message){
 	//message is just commandtext minus the command prefix
-	console.log(responseArray);
 	if(responseArray[message[0]]){
 		console.log(Date() + ': Found a match in defined custom commands.');
 		return responseArray[message];

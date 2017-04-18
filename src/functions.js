@@ -1,7 +1,7 @@
 const config = require('../config.json');
 const bot = require('./bot.js');
 
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll', '/debug'];
 
 const whiteListArray = config.whitelistWords;
 const botOnlyChannels = config.botChannel;
@@ -15,25 +15,37 @@ function toggleAntispam(){
 }
 
 function findBotMessages(message){
+	var responseArray = require('../src/customcommands.json');
+	//set as var since custom commands can be changed on runtime.
 	if (bot.client.user === message.author) {return true;}
+
 	for (var i = 0; i < commandArray.length; i++){
 		if (message.content.startsWith(commandArray[i])){ return true;}
 	}
+
+	for (var i = 0; i < Object.keys(responseArray).length; i++){
+		if (message.content.substring(1) === Object.keys(responseArray)[i]) {
+			message.delete();
+			//I have no fucking idea why you can't just return true and
+			//bulk delete. For now message.delete() on each individual messages will do the job.
+			//I am out.
+		}
+	}
+
 	return false;
 }
 
 function clearMessages(message){
 	message.channel.fetchMessages({limit: 100}).then(function (m){
 		let filtered = m.filter(findBotMessages);
-		try {
-			if (filtered.size >= 2){
-				message.channel.sendMessage('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
-					message.channel.bulkDelete(filtered);
-					sentMessage.edit(':white_check_mark: | Finished deleting ' + filtered.size + ' messages!');
+		if (filtered.size >= 2){
+			message.channel.sendMessage('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
+				message.channel.bulkDelete(filtered).catch(function(e){
+					message.channel.sendMessage('Failed to delete message: ' + e);
+					return false;
 				});
-			}
-		} catch (e){
-			message.channel.sendMessage('Failed to delete: ' + e);
+				sentMessage.edit(':white_check_mark: | Finished deleting ' + filtered.size + ' messages!');
+			});
 		}
 	});
 }
