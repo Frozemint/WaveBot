@@ -127,7 +127,7 @@ Commands ran       : ${commandCount}\`\`\``;
 				}
 				break;
 			case "vote":
-				return votingFunctions.castVote(message.channel.id, commandText[1], message.author.id, message.author.username);
+				return votingFunctions.castVote(message.guild.id, commandText[1], message.author.id, message.author.username);
 				break;
 
 			case "help":

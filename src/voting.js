@@ -7,14 +7,12 @@ var votingJson = new Object();
 function createServerObject(serverID){
 	if (!votingJson[serverID]){
 		votingJson[serverID] = new Object();
-		console.log(votingJson);
 	}
 }
 
 function setQuestion(question, serverID){
 	votingJson[serverID].question = question;
 	return ':white_check_mark: | Poll question set to: ' + votingJson[serverID].question;
-	console.log(votingJson);
 }
 
 function setOptions(array, serverID){
@@ -29,7 +27,6 @@ function setOptions(array, serverID){
 	//every element in the array unique.
 	optionArray = optionArray.filter(function(n, position) {return n && optionArray.indexOf(n) === position});
 	votingJson[serverID].optionArray = optionArray;
-	console.log(votingJson);
 	return ':white_check_mark: | Options of poll set to: ' + optionArray.join(' | ');
 }
 
@@ -49,6 +46,8 @@ function startPoll(channelID, serverID){
 	} else if (votingJson[serverID].question.length > 0){
 		return (':x: | You need to specify the question for the poll.');
 	}
+
+	votingJson[serverID].universalSuffrage = true;
 	//Init a voters array in json
 	votingJson[serverID].votersArray = [];
 	//init a highest vote array in json
@@ -64,7 +63,7 @@ function highlightOption(votes, serverID){
 }
 
 function endPoll(serverID){
-	if (votingJson[serverID].universalSuffrage === false){ return 'There is no poll currently running!';}
+	if (!votingJson[serverID] || votingJson[serverID].universalSuffrage != true){ return 'There is no poll currently running on this server!';}
 	if (votingJson[serverID].universalSuffrage === true){ //Check if polls is running before closing it.
 		resultString = `--- FINAL VOTING RESULTS ON: ${votingJson[serverID].question} ---\n\n`;
 
@@ -133,7 +132,7 @@ function printRawResults(serverID){
 }
 
 function castVote(serverID, option, userID, username){
-	if (votingJson[serverID].universalSuffrage === false){ return ':x:| There are currently no polls in progress!';}
+	if (!votingJson[serverID] || votingJson[serverID].universalSuffrage != true){ return ':x:| There are currently no polls in progress!';}
 	if (!option || votingJson[serverID].optionArray.indexOf(option) === -1) { return ':negative_squared_cross_mark: | Your options for voting are: ' + votingJson[serverID].optionArray.join(' | ');}
 
 	if (findUserVote(userID, serverID) === false){
