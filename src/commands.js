@@ -91,23 +91,26 @@ Commands ran       : ${commandCount}\`\`\``;
 					break;
 
 				case "poll":
+					console.log(votingFunctions.votingJson);
 					if (!commandText[1]){ return ('Try /poll <question/options/start/end> [Options...]');}
 					if (permissionFunction.checkPermissions(message) === false){ return;}
+					//Create an object for storing server data if it does not already exist
+					votingFunctions.createServerObject(message.guild.id);
 					switch (commandText[1].toLowerCase()){
 						case "question": //Two cases here because people keeps adding an s at the end
 						case "questions":
-							return votingFunctions.setQuestion(message.content.substring(commandText[0].length+commandText[1].length+3));
+							return votingFunctions.setQuestion(message.content.substring(commandText[0].length+commandText[1].length+3),message.guild.id);
 						case "option":
 						case "options":
-							return votingFunctions.setOptions(commandText);
+							return votingFunctions.setOptions(commandText,message.guild.id);
 						case "defaults":
 						case "default":
-							return votingFunctions.setDefaults(message.channel.id);
+							return votingFunctions.setDefaults(message.channel.id, message.guild.id);
 						case "start":
-							return votingFunctions.startPoll(message.channel.id);
+							return votingFunctions.startPoll(message.channel.id,message.guild.id);
 						case "end":
-							finalResult = votingFunctions.endPoll();
-							message.channel.sendCode('asciidoc', finalResult);
+							finalResult = votingFunctions.endPoll(message.guild.id);
+							message.channel.sendCode('diff', finalResult);
 							break;
 						default:
 							return ('Try /poll <question/options/start/end> [Options...]');
@@ -116,11 +119,11 @@ Commands ran       : ${commandCount}\`\`\``;
 			case "result":
 			case "results":
 				if (!commandText[1]){
-					resultString = votingFunctions.printResults();
+					resultString = votingFunctions.printResults(message.guild.id);
 					message.channel.sendCode('diff', resultString);
 				} else if (commandText[1] === 'raw'){
-					resultString = votingFunctions.printRawResults();
-					message.channel.sendMessage('Raw data dump on voting results:\n' + `\`\`\` ${resultString}\`\`\``);
+					resultString = votingFunctions.printRawResults(message.guild.id);
+					message.channel.sendMessage('Raw data dump on this server\'s voting data:\n' + `\`\`\` ${resultString}\`\`\``);
 				}
 				break;
 			case "vote":

@@ -48,6 +48,7 @@ function removeCustomCommand(command){
 }
 
 module.exports = {
+	responseArray: responseArray,
 	readJokeCommand: readJokeCommand,
 	addCustomCommand: addCustomCommand,
 	removeCustomCommand: removeCustomCommand
