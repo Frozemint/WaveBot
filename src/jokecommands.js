@@ -2,7 +2,7 @@ const bot = require('./bot.js');
 const fs = require('fs');
 const path = require('path');
 
-var responseArray = require('../src/customcommands.json');
+const responseArray = require('../src/customcommands.json');
 
 
 function readJokeCommand(message){
@@ -25,7 +25,6 @@ function addCustomCommand(message, command, response){
 	//where message is the discord message object, command is the /[trigger word], and response is
 	//the bot output when /[trigger word] is typed.
 	responseArray[command] = response;
-	console.log('ResponseArray is now ' + JSON.stringify(responseArray));
 	fs.writeFile(path.join(__dirname, '../src/customcommands.json'), JSON.stringify(responseArray, null, 2), (err)=>{
 		if (err) {message.channel.sendMessage("Error occured while writing command to file!"); return console.log(err);}
 		console.log('Wrote to file.');
@@ -36,7 +35,6 @@ function addCustomCommand(message, command, response){
 function removeCustomCommand(command){
 	if (responseArray[command]){
 		delete responseArray[command];
-		console.log('ResponseArray is now ' + JSON.stringify(responseArray));
 		fs.writeFile(path.join(__dirname, '../src/customcommands.json'), JSON.stringify(responseArray, null, 2), function(err){
 		if (err) return console.log(err);
 		console.log('Writing to file.');

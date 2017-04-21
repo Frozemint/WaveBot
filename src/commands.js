@@ -4,6 +4,7 @@ const botFunctions = require('./functions.js');
 const votingFunctions = require('./voting.js');
 const permissionFunction = require('./permissions.js');
 const jokeCommands = require('./jokecommands.js');
+const settingAgent = require('./settings.js');
 
 //Counters for stats
 var messagesCount = removedMessages = commandCount = totalBotMessages = 0;
@@ -70,6 +71,19 @@ function readBotCommand(client, message){
 						}
 					}
 					break;
+				case "setting":
+				case "settings":
+					if (!commandText[1]){ return "Do /setting [option]";}
+					if (!permissionFunction.checkPermissions(message)){ return false;}
+					switch (commandText[1].toLowerCase()){
+						case "prefix":
+							settingAgent.changeBotPrefix(message, commandText[2]);
+							break;
+						default:
+							break;
+					}
+
+					break;
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as       : ${client.user.username}
 Discord uptime     : ${Math.floor(client.uptime / (1000 * 60 * 60 * 24))} days ${Math.floor(client.uptime / (1000 * 60 * 60)) % 24} hours ${Math.floor(client.uptime / (1000 * 60))% 60} minutes ${Math.floor(client.uptime / 1000) % 60} seconds
@@ -91,7 +105,6 @@ Commands ran       : ${commandCount}\`\`\``;
 					break;
 
 				case "poll":
-					console.log(votingFunctions.votingJson);
 					if (!commandText[1]){ return ('Try /poll <question/options/start/end> [Options...]');}
 					if (permissionFunction.checkPermissions(message) === false){ return;}
 					//Create an object for storing server data if it does not already exist

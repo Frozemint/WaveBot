@@ -1,7 +1,7 @@
 const config = require('../config.json');
 const bot = require('./bot.js');
 
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/poll', '/debug'];
+const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/result', '/settings', '/poll', '/debug'];
 
 const whiteListArray = config.whitelistWords;
 const botOnlyChannels = config.botChannel;

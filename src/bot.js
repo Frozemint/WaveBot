@@ -4,8 +4,6 @@ const botFunction = require('./functions.js');
 const client = new Discord.Client({autoReconnect: true});
 const config = require('../config.json');
 
-var commandPrefix = config.commandPrefix;
-
 client.once("ready", () => {
 	//This is run when the bot is ready in discord.
 	//We use once to avoid many instances of the bot.
@@ -37,7 +35,7 @@ client.on('error', function(error){
 
 
 client.on('message', function(message){
-
+	var commandPrefix = config.commandPrefix;
 	if (message.channel instanceof Discord.DMChannel) { message.author.sendMessage('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
 	command.increaseMessageCounter();
 
