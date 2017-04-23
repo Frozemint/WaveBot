@@ -36,6 +36,7 @@ function readBotCommand(client, message){
 					return '*waves back*';
 					break;
 				case "say":
+					message.delete();
 					if (!commandText[1]){ return ':warning: | You need to tell me what to say.';}
 					message.channel.sendMessage(message.content.substring(commandText[0].length+1));
 					break;
