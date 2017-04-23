@@ -11,21 +11,24 @@ function createServerObject(serverID){
 }
 
 function setQuestion(question, serverID){
+	if (question.length === 0) {return ':x: | Please type an poll question.';}
 	votingJson[serverID].question = question;
 	return ':white_check_mark: | Poll question set to: ' + votingJson[serverID].question;
 }
 
 function setOptions(array, serverID){
-	if (2 > array.length){
-		return ':x: | You need to specify at least 2 options.';
-	} else if (votingJson[serverID].universalSuffrage === true){
+
+	if (votingJson[serverID].universalSuffrage === true){
 		return ':x: | You cannot change voting options while poll is running!';
 	}
 
+	//Since we are sent the entire message including command texts, we
+	//filter out stuff to only leave /poll option arguments
 	optionArray = array.slice(2, array.length);
 	//Filter options in the array to get rid of empty elements and Make
 	//every element in the array unique.
 	optionArray = optionArray.filter(function(n, position) {return n && optionArray.indexOf(n) === position});
+	if (2 > optionArray.length) { return ' :x: | Please make sure you specify at least 2 UNIQUE options.';}
 	votingJson[serverID].optionArray = optionArray;
 	return ':white_check_mark: | Options of poll set to: ' + optionArray.join(' | ');
 }
@@ -37,15 +40,9 @@ function setDefaults(channelID, serverID){
 }
 
 function startPoll(channelID, serverID){
-	if (votingJson[serverID].universalSuffrage != true && votingJson[serverID].optionArray.length >= 2 && votingJson[serverID].question.length > 0){
-		votingJson[serverID].universalSuffrage = true;
-	} else if (votingJson[serverID].universalSuffrage === true){
-		return ':x: | A poll is already running!';
-	} else if (votingJson[serverID].optionArray < 2){
-		return ':x: | You need to specify the options for the poll.';
-	} else if (votingJson[serverID].question.length > 0){
-		return (':x: | You need to specify the question for the poll.');
-	}
+	if (!votingJson[serverID]) { return ':x: | Please ensure that you have the question and the options for the poll properly setup.';}
+	if (!votingJson[serverID].question || 0 > votingJson[serverID].question.length) { return ':x: | Please ensure you have a question set.';}
+	if (!votingJson[serverID].optionArray || 2 > votingJson[serverID].optionArray.length) { return ':x: | Please ensure you have the option of the poll properly setup.';}
 
 	votingJson[serverID].universalSuffrage = true;
 	//Init a voters array in json
