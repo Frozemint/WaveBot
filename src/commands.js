@@ -74,12 +74,20 @@ function readBotCommand(client, message){
 					break;
 				case "setting":
 				case "settings":
-					if (!commandText[1]){ return "Do /setting [option]";}
+					if (!commandText[1] || !commandText[2]){ return "Do /setting [prefix/addchannel/delchannel] [argument]";}
 					if (!permissionFunction.checkPermissions(message)){ return false;}
 					switch (commandText[1].toLowerCase()){
 						case "prefix":
 							settingAgent.changeBotPrefix(message, commandText[2]);
 							break;
+						case "addchannel":
+							settingAgent.addBotChannel(message, commandText[2]);
+							break;
+						case "delchannel":
+							settingAgent.removeBotChannel(message, commandText[2]);
+							break;
+						case "addserver":
+
 						default:
 							break;
 					}

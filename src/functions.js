@@ -4,7 +4,6 @@ const bot = require('./bot.js');
 const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/result', '/settings', '/poll', '/debug'];
 
 const whiteListArray = config.whitelistWords;
-const botOnlyChannels = config.botChannel;
 const botOnlyServers = config.checkServers;
 
 var antiSpam = true;
@@ -63,6 +62,7 @@ function antiSpamFunction (bot, message){
 
 	Message removal is not executed if the checks above are failed at any point.
 	*/
+	var botOnlyChannels = config.botChannel;
 	var tempMessage = message.content.toLowerCase();
 	var regex = new RegExp(whiteListArray.join("|"), "im");
 	if (antiSpam === true && message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && message.author != bot.user && tempMessage.match(regex) === null && botOnlyServers.indexOf(message.guild.id) > -1){
