@@ -1,7 +1,7 @@
 //WaveBot start.js
 
-const bot = require('./src/bot.js');
-const auth = require('./auth.json');
+const bot = require('./bot.js');
+const auth = require('./config/auth.json');
 const fs = require('fs');
 const util = require('util');
 
