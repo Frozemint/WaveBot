@@ -26,10 +26,19 @@ function setOptions(array, serverID){
 	//Since we are sent the entire message including command texts, we
 	//filter out stuff to only leave /poll option arguments
 	optionArray = array.slice(2, array.length);
-	//Filter options in the array to get rid of empty elements and Make
-	//every element in the array unique.
-	optionArray = optionArray.filter(function(n, position) {return n && optionArray.indexOf(n) === position});
-	if (2 > optionArray.length) { return ' :x: | Please make sure you specify at least 2 UNIQUE options.';}
+
+	for (i = 0; i < optionArray.length; i++){
+		optionArray[i] = optionArray[i].replace(/[^a-zA-Z0-9]/g, "");
+		//Remove all special characters from elements of the array
+		//making them empty and will be removed when filtered below.
+	}
+
+		//Filter options in the array to get rid of empty elements and Make
+		//every element in the array unique.
+	optionArray = optionArray.filter(function(n, position) {return n && optionArray.indexOf(n) === position && n != ''});
+
+	if (2 > optionArray.length) { return ' :x: | Please make sure you specify at least 2 valid UNIQUE options. Options cannot be empty or contain purely special characters. All special characters are filtered.';}
+
 	votingJson[serverID].optionArray = optionArray;
 	return ':white_check_mark: | Options of poll set to: ' + optionArray.join(' | ');
 }
@@ -140,6 +149,7 @@ function printRawResults(serverID){
 function castVote(message, serverID, option, userID, username){
 	if (!votingJson[serverID] || votingJson[serverID].universalSuffrage != true){ return ':x:| There are currently no polls in progress!';}
 	if (!option || votingJson[serverID].optionArray.indexOf(option) === -1) { return ':negative_squared_cross_mark: | Your options for voting are: ' + votingJson[serverID].optionArray.join(' | ');}
+	if (votingJson[serverID].secretBallot) {message.delete();}
 
 	if (findUserVote(userID, serverID) === false){ //If they haven't voted
 		votingJson[serverID].votersArray.push(option + '|' + userID + '|' + username);
@@ -149,7 +159,6 @@ function castVote(message, serverID, option, userID, username){
 			}
 		}
 		if (votingJson[serverID].secretBallot) {
-			message.delete();
 			return ':white_check_mark: | ' + username + ', your vote has been recorded. Results will be available when the poll close.';
 		}
 
