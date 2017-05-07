@@ -1,5 +1,7 @@
 const config = require('./config/config.json');
 const bot = require('./bot.js');
+const request = require('request');
+const http = require('http');
 
 const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/result', '/settings', '/poll', '/debug'];
 
@@ -76,8 +78,35 @@ function antiSpamFunction (bot, message){
 	}
 }
 
+function minecraftServerInfo (serverIP, message){
+	message.channel.sendMessage('```Fetching server info...```').then (function(sentMessage){
+		var url = 'https://mcapi.ca/query/' + serverIP + '/players';
+		request(url, function(error, response, body){
+			var data = JSON.parse(body);
+			if (data.error){
+				sentMessage.edit('```Error getting Minecraft server status: :' + data.error + '```');
+				return;
+			}
+			var minecraftData = '```';
+			if(!data.status){
+				minecraftData += 'The server appears to be offline.```';
+				sentMessage.edit(minecraftData);
+				return;
+			}
+			//If we reach this point, the server is online.
+			minecraftData += `The server ` + serverIP + ` is online!
+Server Ping   : ` + data.ping + `ms
+Online Players: ` + data.players.online + `
+Max Players   : ` + data.players.max;
+			minecraftData += '```';
+			sentMessage.edit(minecraftData);
+		})
+	});
+}
+
 module.exports = {
 	antiSpamFunction: antiSpamFunction,
 	toggleAntispam: toggleAntispam,
 	clearMessages: clearMessages,
+	minecraftServerInfo: minecraftServerInfo
 };

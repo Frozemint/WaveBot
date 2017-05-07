@@ -148,8 +148,8 @@ function printRawResults(serverID){
 
 function castVote(message, serverID, option, userID, username){
 	if (!votingJson[serverID] || votingJson[serverID].universalSuffrage != true){ return ':x:| There are currently no polls in progress!';}
-	if (!option || votingJson[serverID].optionArray.indexOf(option) === -1) { return ':negative_squared_cross_mark: | Your options for voting are: ' + votingJson[serverID].optionArray.join(' | ');}
 	if (votingJson[serverID].secretBallot) {message.delete();}
+	if (!option || votingJson[serverID].optionArray.indexOf(option) === -1) { return ':negative_squared_cross_mark: | Your options for voting are: ' + votingJson[serverID].optionArray.join(' | ');}
 
 	if (findUserVote(userID, serverID) === false){ //If they haven't voted
 		votingJson[serverID].votersArray.push(option + '|' + userID + '|' + username);

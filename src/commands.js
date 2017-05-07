@@ -87,11 +87,21 @@ function readBotCommand(client, message){
 							settingAgent.removeBotChannel(message, commandText[2]);
 							break;
 						case "addserver":
-
+							break;
 						default:
 							break;
 					}
 
+					break;
+				case "mcserver":
+					if (!commandText[1]) {return "Do /mcserver [ip] or 'pool' to get server status of Poolandia.";}
+					if (commandText[1].toLowerCase() === 'pool'){
+						botFunctions.minecraftServerInfo('119.81.65.245:49127', message);
+						//Yeah not using return because fuck getting that to work
+					} else {
+						botFunctions.minecraftServerInfo(commandText[1], message);
+						//Yeah not using return because fuck getting that to work
+					}
 					break;
 				case "info":
 					return `Information on WaveBot:\n` + `\`\`\`Logged in as       : ${client.user.username}
