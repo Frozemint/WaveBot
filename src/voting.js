@@ -7,6 +7,7 @@ var votingJson = new Object();
 function createServerObject(serverID){
 	if (!votingJson[serverID]){
 		votingJson[serverID] = new Object();
+		votingJson[serverID].secretBallot = false;
 	}
 }
 
@@ -44,6 +45,8 @@ function startPoll(channelID, serverID){
 	if (!votingJson[serverID].question || 0 > votingJson[serverID].question.length) { return ':x: | Please ensure you have a question set.';}
 	if (!votingJson[serverID].optionArray || 2 > votingJson[serverID].optionArray.length) { return ':x: | Please ensure you have the option of the poll properly setup.';}
 
+	if (!votingJson[serverID].secretBallot) { votingJson[serverID].secretBallot = false;}
+
 	votingJson[serverID].universalSuffrage = true;
 	//Init a voters array in json
 	votingJson[serverID].votersArray = [];
@@ -72,7 +75,11 @@ function endPoll(serverID){
 		}
 
 		for (i = 0; i < votingJson[serverID].optionArray.length; i++){
-			resultString += `\n${highlightOption(countUserVote(votingJson[serverID].optionArray[i], serverID), serverID)} ${votingJson[serverID].optionArray[i]}:: ${countUserVote(votingJson[serverID].optionArray[i], serverID)} votes [${countVoteIdentity(votingJson[serverID].optionArray[i], serverID)}]`;
+			if (votingJson[serverID].secretBallot){
+				resultString += `\n${highlightOption(countUserVote(votingJson[serverID].optionArray[i], serverID), serverID)} ${votingJson[serverID].optionArray[i]}:: ${countUserVote(votingJson[serverID].optionArray[i], serverID)} votes`;
+			} else {
+				resultString += `\n${highlightOption(countUserVote(votingJson[serverID].optionArray[i], serverID), serverID)} ${votingJson[serverID].optionArray[i]}:: ${countUserVote(votingJson[serverID].optionArray[i], serverID)} votes [${countVoteIdentity(votingJson[serverID].optionArray[i], serverID)}]`;
+			}
 		}
 
 		votingJson[serverID].universalSuffrage = false;
@@ -115,11 +122,13 @@ function countVoteIdentity (option, serverID){
 
 function printResults(serverID){
 	if (!votingJson[serverID] || votingJson[serverID].universalSuffrage != true){ return 'There are currently no polls in progress on this server.';}
-
+	if (votingJson[serverID].secretBallot) {
+		return 'As secret ballots are being used, results are only available when the poll close.';
+	}
 	resultString = `---== VOTING RESULTS ON: ${votingJson[serverID].question} ==---\n\n`;
 
 	for (i = 0; i < votingJson[serverID].optionArray.length; i++){
-		resultString += `\n${highlightOption(countUserVote(votingJson[serverID].optionArray[i], serverID), serverID)} ${votingJson[serverID].optionArray[i]}:: ${countUserVote(votingJson[serverID].optionArray[i], serverID)} votes [${countVoteIdentity(votingJson[serverID].optionArray[i], serverID)}]`;
+			resultString += `\n${highlightOption(countUserVote(votingJson[serverID].optionArray[i], serverID), serverID)} ${votingJson[serverID].optionArray[i]}:: ${countUserVote(votingJson[serverID].optionArray[i], serverID)} votes [${countVoteIdentity(votingJson[serverID].optionArray[i], serverID)}]`;
 	}
 	return resultString;
 }
@@ -128,21 +137,31 @@ function printRawResults(serverID){
 	return JSON.stringify(votingJson[serverID], null, 2);
 }
 
-function castVote(serverID, option, userID, username){
+function castVote(message, serverID, option, userID, username){
 	if (!votingJson[serverID] || votingJson[serverID].universalSuffrage != true){ return ':x:| There are currently no polls in progress!';}
 	if (!option || votingJson[serverID].optionArray.indexOf(option) === -1) { return ':negative_squared_cross_mark: | Your options for voting are: ' + votingJson[serverID].optionArray.join(' | ');}
 
-	if (findUserVote(userID, serverID) === false){
+	if (findUserVote(userID, serverID) === false){ //If they haven't voted
 		votingJson[serverID].votersArray.push(option + '|' + userID + '|' + username);
 		for (i = 0; i < votingJson[serverID].optionArray.length; i++){
 			if (countUserVote(option, serverID) >= votingJson[serverID].highestVote){
 				votingJson[serverID].highestVote = countUserVote(option, serverID);
 			}
 		}
+		if (votingJson[serverID].secretBallot) {
+			message.delete();
+			return ':white_check_mark: | ' + username + ', your vote has been recorded. Results will be available when the poll close.';
+		}
+
 		return ':white_check_mark: | ' + username + ', your vote has been recorded!\nDo /results for the latest results!';
 	} else {
 		return ':no_entry_sign: | You have already voted once!';
 	}
+}
+
+function setSecret(serverID, setting){
+	votingJson[serverID].secretBallot = !votingJson[serverID].secretBallot;
+	return ':white_check_mark: | The use of secret ballot has been set to : ' + votingJson[serverID].secretBallot;
 }
 
 
@@ -159,5 +178,6 @@ module.exports = {
 	startPoll: startPoll,
 	castVote: castVote,
 	endPoll: endPoll,
-	printRawResults: printRawResults
+	printRawResults: printRawResults,
+	setSecret: setSecret
 }

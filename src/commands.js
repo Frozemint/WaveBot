@@ -119,6 +119,8 @@ Commands ran       : ${commandCount}\`\`\``;
 					//Create an object for storing server data if it does not already exist
 					votingFunctions.createServerObject(message.guild.id);
 					switch (commandText[1].toLowerCase()){
+						case "secret":
+							return votingFunctions.setSecret(message.guild.id);
 						case "question": //Two cases here because people keeps adding an s at the end
 						case "questions":
 							return votingFunctions.setQuestion(message.content.substring(commandText[0].length+commandText[1].length+3),message.guild.id);
@@ -138,6 +140,7 @@ Commands ran       : ${commandCount}\`\`\``;
 							return ('Try /poll <question/options/start/end> [Options...]');
 					}
 					break;
+
 			case "result":
 			case "results":
 				if (!commandText[1]){
@@ -149,7 +152,7 @@ Commands ran       : ${commandCount}\`\`\``;
 				}
 				break;
 			case "vote":
-				return votingFunctions.castVote(message.guild.id, commandText[1], message.author.id, message.author.username);
+				return votingFunctions.castVote(message, message.guild.id, commandText[1], message.author.id, message.author.username);
 				break;
 
 			case "help":
