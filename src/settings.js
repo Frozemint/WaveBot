@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const config = require('../config.json');
+const config = require('./config/config.json');
 
 function changeBotPrefix(message, newPrefix){
   config.commandPrefix = newPrefix;

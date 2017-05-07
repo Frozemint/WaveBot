@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const config = require('./config/config.json');
 const bot = require('./bot.js');
 
 const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/result', '/settings', '/poll', '/debug'];
