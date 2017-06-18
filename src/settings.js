@@ -6,9 +6,9 @@ const config = require('./config/config.json');
 function changeBotPrefix(message, newPrefix){
   config.commandPrefix = newPrefix;
   fs.writeFile(path.join(__dirname, '../config.json'), JSON.stringify(config, null, 2), (err)=>{
-		if (err) {message.channel.sendMessage("Error occured while writing command to file!"); return console.log(err);}
+		if (err) {message.channel.send("Error occured while writing command to file!"); return console.log(err);}
 		console.log('Wrote new bot prefix to file.');
-    message.channel.sendMessage("Successfully changed settings. Bot command prefix is now `" + newPrefix + "``.");
+    message.channel.send("Successfully changed settings. Bot command prefix is now `" + newPrefix + "``.");
     console.log('Successfully changed settings.');
 	});
 }
@@ -16,9 +16,9 @@ function changeBotPrefix(message, newPrefix){
 function addBotChannel(message, channelID){
   config.botChannel.push(channelID);
   fs.writeFile(path.join(__dirname, '../config.json'), JSON.stringify(config, null, 2), (err)=>{
-		if (err) {message.channel.sendMessage("Error occured while writing command to file!"); return console.log(err);}
+		if (err) {message.channel.send("Error occured while writing command to file!"); return console.log(err);}
 		console.log('Wrote new bot only channel to file.');
-    message.channel.sendMessage("Successfully changed settings. Whitelisted bot only channels are now ```" + config.botChannel + "```");
+    message.channel.send("Successfully changed settings. Whitelisted bot only channels are now ```" + config.botChannel + "```");
     console.log('Successfully changed settings.');
 	});
 }

@@ -26,7 +26,7 @@ function addCustomCommand(message, command, response){
 	//the bot output when /[trigger word] is typed.
 	responseArray[command] = response;
 	fs.writeFile(path.join(__dirname, '../src/customcommands.json'), JSON.stringify(responseArray, null, 2), (err)=>{
-		if (err) {message.channel.sendMessage("Error occured while writing command to file!"); return console.log(err);}
+		if (err) {message.channel.send("Error occured while writing command to file!"); return console.log(err);}
 		console.log('Wrote to file.');
 	});
 	return 'Added command to array.';

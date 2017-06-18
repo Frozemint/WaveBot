@@ -10,7 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.1.0",
-    "node-opus": "^0.2.4"
+    "node-opus": "^0.2.4",
+    "request": "^2.81.0"
   },
   "devDependencies": {
     "node-opus": "^0.2.2"

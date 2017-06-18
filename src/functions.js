@@ -7,7 +7,6 @@ const whiteListArray = config.whitelistWords;
 const botOnlyServers = config.checkServers;
 
 var commandPrefix = config.commandPrefix;
-var commandArray = ['/', '/ping', 'exit'];
 
 var antiSpam = true;
 
@@ -20,18 +19,7 @@ function findBotMessages(message){
 	var responseArray = require('../src/customcommands.json');
 	//set as var since custom commands can be changed on runtime.
 	if (bot.client.user === message.author) {return true;}
-	for (var i = 0; i < commandArray.length; i++){
-		if (message.content.startsWith(commandArray[i])){ return true;}
-	}
-
-	for (var i = 0; i < Object.keys(responseArray).length; i++){
-		if (message.content.substring(1) === Object.keys(responseArray)[i]) {
-			message.delete();
-			//I have no fucking idea why you can't just return true and
-			//bulk delete. For now message.delete() on each individual messages will do the job.
-			//I am out.
-		}
-	}
+	if (message.content.startsWith(commandPrefix)){ return true;}
 
 	return false;
 }
@@ -40,11 +28,15 @@ function clearMessages(message){
 	message.channel.fetchMessages({limit: 100}).then(function (m){
 		let filtered = m.filter(findBotMessages);
 		if (filtered.size >= 2){
-			message.channel.sendMessage('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
+			message.channel.send('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
 				message.channel.bulkDelete(filtered).catch(function(e){
-					message.channel.sendMessage('Failed to delete message: ' + e);
+					if (e){
+						message.channel.send(':warning: | Failed to delete message - ' + e);
+						console.log('Failed to delete message - ' + e)
+					} else if (!e){
+						sentMessage.edit(':white_check_mark: | Finished deleting ' + filtered.size + ' messages!');
+					}
 				});
-				sentMessage.edit(':white_check_mark: | Finished deleting ' + filtered.size + ' messages!');
 			});
 		}
 	});
@@ -78,12 +70,12 @@ function antiSpamFunction (bot, message){
 }
 
 function minecraftServerInfo (serverIP, message){
-	message.channel.sendMessage('```Fetching server info...```').then (function(sentMessage){
+	message.channel.send('```Fetching server info...```').then (function(sentMessage){
 		var url = 'https://mcapi.ca/query/' + serverIP + '/players';
 		request(url, function(error, response, body){
 			var data = JSON.parse(body);
 			if (data.error){
-				sentMessage.edit('```Error getting Minecraft server status: :' + data.error + '```');
+				sentMessage.edit('```Error getting Minecraft server status: ' + data.error + '\n Try using the server\'s IP instead of domain name.```');
 				return;
 			}
 			var minecraftData = '```';

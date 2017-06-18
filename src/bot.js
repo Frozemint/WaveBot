@@ -36,7 +36,7 @@ client.on('error', function(error){
 
 client.on('message', function(message){
 	var commandPrefix = config.commandPrefix;
-	if (message.channel instanceof Discord.DMChannel) { message.author.sendMessage('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
+	if (message.channel instanceof Discord.DMChannel) { message.author.send('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
 	command.increaseMessageCounter();
 
 	if (message.author.bot === true) { command.increaseBotMessageCounter();}
@@ -49,7 +49,7 @@ client.on('message', function(message){
 	if (message.author.bot === false && message.content[0] === commandPrefix){
 		command.increaseCommandCounter();
 		output = command.readBotCommand(client, message, message.user);
-		if (output) { message.channel.sendMessage('<@' + message.author.id + '> | ' + output);}
+		if (output) { message.channel.send('<@' + message.author.id + '> | ' + output);}
 	}
 })
 

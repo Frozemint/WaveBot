@@ -38,12 +38,12 @@ function readBotCommand(client, message){
 				case "say":
 					message.delete();
 					if (!commandText[1]){ return ':warning: | You need to tell me what to say.';}
-					message.channel.sendMessage(message.content.substring(commandText[0].length+1));
+					message.channel.send(message.content.substring(commandText[0].length+1));
 					break;
 				case "sayin":
 					stringToAnnounce = message.content.substring(commandText[0].length + commandText[1].length + 2);
 					stringToAnnounce = stringToAnnounce.replace('\\', '');
-					setTimeout(function(){ message.channel.sendMessage(stringToAnnounce)}, 1000 * 60 * commandText[1]);
+					setTimeout(function(){ message.channel.send(stringToAnnounce)}, 1000 * 60 * commandText[1]);
 					return ' :timer: | You are all set! Message will be broadcasted after ' + commandText[1] + ' minutes.';
 					break;
 				case "exit":
@@ -66,9 +66,9 @@ function readBotCommand(client, message){
 					if (permissionFunction.checkPermissions(message)){
 						try {
 							code = message.content.substring(commandText[0].length+1);
-							message.channel.sendMessage(`:white_check_mark: | Output:\n` + `\`\`\`${eval(code)}\`\`\``);
+							message.channel.send(`:white_check_mark: | Output:\n` + `\`\`\`${eval(code)}\`\`\``);
 						} catch (err){
-							message.channel.sendMessage(`:warning: | Encountered error during eval:\n` + `\`\`\`${err}\`\`\``);
+							message.channel.send(`:warning: | Encountered error during eval:\n` + `\`\`\`${err}\`\`\``);
 						}
 					}
 					break;
@@ -96,7 +96,7 @@ function readBotCommand(client, message){
 				case "mcserver":
 					if (!commandText[1]) {return "Do /mcserver [ip] or 'pool' to get server status of Poolandia.";}
 					if (commandText[1].toLowerCase() === 'pool'){
-						botFunctions.minecraftServerInfo('119.81.65.245:49127', message);
+						botFunctions.minecraftServerInfo('poolandia.mcph.co', message);
 						//Yeah not using return because fuck getting that to work
 					} else {
 						botFunctions.minecraftServerInfo(commandText[1], message);
@@ -144,7 +144,7 @@ Commands ran       : ${commandCount}\`\`\``;
 							return votingFunctions.startPoll(message.channel.id,message.guild.id);
 						case "end":
 							finalResult = votingFunctions.endPoll(message.guild.id);
-							message.channel.sendCode('diff', finalResult);
+							message.channel.send(finalResult, {code: 'diff'});
 							break;
 						default:
 							return ('Try /poll <question/options/start/end> [Options...]');
@@ -155,10 +155,10 @@ Commands ran       : ${commandCount}\`\`\``;
 			case "results":
 				if (!commandText[1]){
 					resultString = votingFunctions.printResults(message.guild.id);
-					message.channel.sendCode('diff', resultString);
+					message.channel.send(resultString, {code: 'diff'});
 				} else if (commandText[1] === 'raw'){
 					resultString = votingFunctions.printRawResults(message.guild.id);
-					message.channel.sendMessage('Raw data dump on this server\'s voting data:\n' + `\`\`\` ${resultString}\`\`\``);
+					message.channel.send('Raw data dump on this server\'s voting data:\n' + `\`\`\` ${resultString}\`\`\``);
 				}
 				break;
 			case "vote":
@@ -166,7 +166,7 @@ Commands ran       : ${commandCount}\`\`\``;
 				break;
 
 			case "help":
-					message.author.sendMessage('**Command List for WaveBot**\n'+
+					message.author.send('**Command List for WaveBot**\n'+
 					`\`\`\`/ping - Pings WaveBot. Useful for checking on Bot.
 /say <content> - Makes WaveBot type <content> into the text channel the command was ran
 /about - Prints information about WaveBot

@@ -7,7 +7,7 @@ function checkPermissions(message){
 	} else {
 		//Log the incident if it's not an authorised user.
 		console.log('User ' + message.author.username + ' just attempted to run a admin only command and was denied.');
-		message.channel.sendMessage(':no_entry_sign: | You do not have permission to execute the said command, this incident will be reported.');
+		message.channel.send(':no_entry_sign: | You do not have permission to execute the said command, this incident will be reported.');
 		return false;
 	}
 }
