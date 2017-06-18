@@ -119,7 +119,12 @@ Commands ran       : ${commandCount}\`\`\``;
 					break;
 				case "clear":
 					if (permissionFunction.checkPermissions(message)){
-						botFunctions.clearMessages(message);
+						if (!commandText[1]){
+							message.channel.send('Messages to fetch unspecified, defaulting to 100.');
+							return botFunctions.clearMessages(message, 100);
+						} else {
+							return botFunctions.clearMessages(message, commandText[1]);
+						}
 					}
 					break;
 

@@ -16,29 +16,18 @@ function toggleAntispam(){
 }
 
 function findBotMessages(message){
-	var responseArray = require('../src/customcommands.json');
-	//set as var since custom commands can be changed on runtime.
 	if (bot.client.user === message.author) {return true;}
 	if (message.content.startsWith(commandPrefix)){ return true;}
 
 	return false;
 }
 
-function clearMessages(message){
-	message.channel.fetchMessages({limit: 100}).then(function (m){
+function clearMessages(message, messageMagnitude){
+	message.channel.fetchMessages({limit: messageMagnitude}).then(m =>{
 		let filtered = m.filter(findBotMessages);
-		if (filtered.size >= 2){
-			message.channel.send('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
-				message.channel.bulkDelete(filtered).catch(function(e){
-					if (e){
-						message.channel.send(':warning: | Failed to delete message - ' + e);
-						console.log('Failed to delete message - ' + e)
-					} else if (!e){
-						sentMessage.edit(':white_check_mark: | Finished deleting ' + filtered.size + ' messages!');
-					}
-				});
-			});
-		}
+		message.channel.bulkDelete(filtered)
+		.catch(err => message.channel.send(':warning: | Error while deleting messages - ' + err))
+		.then(message.channel.send('Finished deleting ' + filtered.size + ' messages.'));
 	});
 }
 
@@ -70,7 +59,7 @@ function antiSpamFunction (bot, message){
 }
 
 function minecraftServerInfo (serverIP, message){
-	message.channel.send('```Fetching server info...```').then (function(sentMessage){
+	message.channel.send('```Fetching server info...```').then(function(sentMessage){
 		var url = 'https://mcapi.ca/query/' + serverIP + '/players';
 		request(url, function(error, response, body){
 			var data = JSON.parse(body);
