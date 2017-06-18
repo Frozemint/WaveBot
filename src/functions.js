@@ -3,10 +3,11 @@ const bot = require('./bot.js');
 const request = require('request');
 const http = require('http');
 
-const commandArray = ['/clear', '/ping', '/clrcom', '/help', '/say', '/sayin', '/exit', '/help', '/about', '/info', '/antispam', '/eval', '/sleep', '/vote', '/results', '/result', '/settings', '/poll', '/debug'];
-
 const whiteListArray = config.whitelistWords;
 const botOnlyServers = config.checkServers;
+
+var commandPrefix = config.commandPrefix;
+var commandArray = ['/', '/ping', 'exit'];
 
 var antiSpam = true;
 
@@ -19,7 +20,6 @@ function findBotMessages(message){
 	var responseArray = require('../src/customcommands.json');
 	//set as var since custom commands can be changed on runtime.
 	if (bot.client.user === message.author) {return true;}
-
 	for (var i = 0; i < commandArray.length; i++){
 		if (message.content.startsWith(commandArray[i])){ return true;}
 	}
@@ -43,7 +43,6 @@ function clearMessages(message){
 			message.channel.sendMessage('Deleting ' + filtered.size + ' messages...').then(function(sentMessage){
 				message.channel.bulkDelete(filtered).catch(function(e){
 					message.channel.sendMessage('Failed to delete message: ' + e);
-					return false;
 				});
 				sentMessage.edit(':white_check_mark: | Finished deleting ' + filtered.size + ' messages!');
 			});
