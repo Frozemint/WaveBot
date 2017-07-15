@@ -29,8 +29,10 @@ function setOptions(array, serverID){
 
 	for (i = 0; i < optionArray.length; i++){
 		optionArray[i] = optionArray[i].replace(/[^a-zA-Z0-9]/g, "");
+		optionArray[i] = optionArray[i].toLowerCase();
 		//Remove all special characters from elements of the array
 		//making them empty and will be removed when filtered below.
+		//Turn every option to lowercase
 	}
 
 		//Filter options in the array to get rid of empty elements and Make
@@ -44,7 +46,7 @@ function setOptions(array, serverID){
 }
 
 function setDefaults(channelID, serverID){
-	votingJson[serverID].question = 'Default Question', votingJson[serverID].optionArray = ['Yes', 'No'];
+	votingJson[serverID].question = 'Default Question', votingJson[serverID].optionArray = ['yes', 'no'];
 	startPoll(channelID, serverID);
 	return ':white_check_mark: | Defaults for poll loaded and started.';
 }
@@ -147,6 +149,7 @@ function printRawResults(serverID){
 }
 
 function castVote(message, serverID, option, userID, username){
+	option = option.toLowerCase();
 	if (!votingJson[serverID] || votingJson[serverID].universalSuffrage != true){ return ':x:| There are currently no polls in progress!';}
 	if (votingJson[serverID].secretBallot) {message.delete();}
 	if (!option || votingJson[serverID].optionArray.indexOf(option) === -1) { return ':negative_squared_cross_mark: | Your options for voting are: ' + votingJson[serverID].optionArray.join(' | ');}
