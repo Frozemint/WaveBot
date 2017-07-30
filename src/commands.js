@@ -93,6 +93,9 @@ function readBotCommand(client, message){
 					}
 
 					break;
+				case "test":
+					//botFunctions.slowClearMessage(message);
+					break;
 				case "mcserver":
 					if (!commandText[1]) {return "Do /mcserver [ip] or 'pool' to get server status of Poolandia.";}
 					if (commandText[1].toLowerCase() === 'pool'){
@@ -186,6 +189,8 @@ Commands ran       : ${commandCount}\`\`\``;
 /eval <javascript code> - Used to run arbitary Javascript Code. USE WITH CAUTION!
 /exit - Exits WaveBot\`\`\``);
 				break;
+			case "invite":
+					return ('Invite link for WaveBot: https://discordapp.com/api/oauth2/authorize?client_id=233380635777957890&scope=bot&permissions=0x00002000')
 				default:
 					//If typed command does not match anything, search the joke commands
 					return jokeCommands.readJokeCommand(commandText);

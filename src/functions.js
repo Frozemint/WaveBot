@@ -31,6 +31,20 @@ function clearMessages(message, messageMagnitude){
 	});
 }
 
+function slowClearMessage(message){
+	message.channel.fetchMessages({
+			limit: 100
+		})
+		.then(messages => {
+			let msg_array = messages.array();
+			let counter = 0;
+			msg_array.map(m => {
+				m.delete().catch(console.error);
+				console.log('Deleted the \#' + counter +' message w/ ID: ' +  m.id);
+				counter++;
+			});
+		});
+}
 
 function antiSpamFunction (bot, message){
 
@@ -88,5 +102,6 @@ module.exports = {
 	antiSpamFunction: antiSpamFunction,
 	toggleAntispam: toggleAntispam,
 	clearMessages: clearMessages,
-	minecraftServerInfo: minecraftServerInfo
+	minecraftServerInfo: minecraftServerInfo,
+	slowClearMessage: slowClearMessage
 };
