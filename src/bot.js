@@ -36,19 +36,18 @@ client.on('error', function(error){
 
 client.on('message', function(message){
 	var commandPrefix = config.commandPrefix;
-	if (message.channel instanceof Discord.DMChannel) { message.author.send('I cannot run commands in Direct Messages. Sorry :('); return; } //Do not respond to DM.
-	command.increaseMessageCounter();
 
-	if (message.author.bot === true) { command.increaseBotMessageCounter();}
+	//Do not respond to DM.
+	if (message.channel instanceof Discord.DMChannel) { message.author.send('I cannot run commands in Direct Messages. Sorry :('); return; }
 
+	//Spam checking function
 	if (botFunction.antiSpamFunction(client, message) === true){
 		message.delete();
 		command.increaseRemovedCounter();
 	}
 
 	if (message.author.bot === false && message.content[0] === commandPrefix){
-		command.increaseCommandCounter();
-		output = command.readBotCommand(client, message, message.user);
+		output = command.readBotCommand(client, message.content.split(" "));
 		if (output) { message.channel.send('<@' + message.author.id + '> | ' + output);}
 	}
 })

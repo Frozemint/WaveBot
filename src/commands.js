@@ -27,7 +27,6 @@ function increaseBotMessageCounter(){
 
 function readBotCommand(client, message){
 	//Read Bot Command and handle it accordingly
-	commandText = message.content.split(" ");
 	commandText[0] = commandText[0].substring(1, commandText[0].length);
 	messagesCount++;
 	console.log(Date() + ': Treating ' + message.content + ' typed by ' + message.author.username + ' as a command.');

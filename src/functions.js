@@ -6,18 +6,33 @@ const http = require('http');
 const whiteListArray = config.whitelistWords;
 const botOnlyServers = config.checkServers;
 
-var commandPrefix = config.commandPrefix;
-
 var antiSpam = true;
+var messagesCount = removedMessages = commandCount = totalBotMessages = 0;
+
+//=============================
+//File made of helper functions for bot functionality
+//such as message deleting and statistics tracking
+
 
 function toggleAntispam(){
 	antiSpam = !antiSpam;
 	return ':white_check_mark: | Antispam function has been toggled to: ' + antiSpam;
 }
 
+function statisticsTracking(message){
+	messagesCount++;
+	if (message.author.bot){
+		totalBotMessages++;
+	}
+	if (message.content[0] == config.commandPrefix){
+		commandCount++;
+	}
+}
+
+
 function findBotMessages(message){
 	if (bot.client.user === message.author) {return true;}
-	if (message.content.startsWith(commandPrefix)){ return true;}
+	if (message.content.startsWith(config.commandPrefix)){ return true;}
 
 	return false;
 }
@@ -29,21 +44,6 @@ function clearMessages(message, messageMagnitude){
 		.catch(err => message.channel.send(':warning: | Error while deleting messages - ' + err))
 		.then(message.channel.send('Finished deleting ' + filtered.size + ' messages.'));
 	});
-}
-
-function slowClearMessage(message){
-	message.channel.fetchMessages({
-			limit: 100
-		})
-		.then(messages => {
-			let msg_array = messages.array();
-			let counter = 0;
-			msg_array.map(m => {
-				m.delete().catch(console.error);
-				console.log('Deleted the \#' + counter +' message w/ ID: ' +  m.id);
-				counter++;
-			});
-		});
 }
 
 function antiSpamFunction (bot, message){
@@ -63,6 +63,7 @@ function antiSpamFunction (bot, message){
 	var regex = new RegExp(whiteListArray.join("|"), "im");
 	if (antiSpam === true && message.author.bot === true && botOnlyChannels.indexOf(message.channel.id) === -1 && message.author != bot.user && tempMessage.match(regex) === null && botOnlyServers.indexOf(message.guild.id) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' from ' + message.author.username +  ' will be removed.');
+		removedMessages++
 		return true;
 	} else if (tempMessage.match(regex) != null && botOnlyChannels.indexOf(message.channel.id) === -1 && botOnlyServers.indexOf(message.guild.id) > -1 && message.author.bot === true && botOnlyServers.indexOf(message.guild.id) > -1){
 		console.log(Date() + ': Message \'' + message.content + '\' is whitelisted. Not removing.');

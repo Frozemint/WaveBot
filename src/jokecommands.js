@@ -12,6 +12,7 @@ function readJokeCommand(message){
 		return responseArray[message];
 	}
 	switch(message[0].toLowerCase()){
+		//kill me
 		case "meme":
 			var memeVictim = message[1];
 			return '<@!226535465149267978>, ' + memeVictim + ' wants to be memed!';
