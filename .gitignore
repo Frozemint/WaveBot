@@ -4,4 +4,5 @@ config.json
 *.txt
 *.json
 src/*.json
-src/config/*
+src/config/*.json
+src/config/*.json.example
