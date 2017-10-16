@@ -1,8 +1,2 @@
-auth.json
-config.json
-*.log
-*.txt
-*.json
-src/*.json
-src/config/*.json
-src/config/*.json.example
+start.sh
+tokens.json
