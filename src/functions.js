@@ -103,6 +103,5 @@ module.exports = {
 	antiSpamFunction: antiSpamFunction,
 	toggleAntispam: toggleAntispam,
 	clearMessages: clearMessages,
-	minecraftServerInfo: minecraftServerInfo,
-	slowClearMessage: slowClearMessage
+	minecraftServerInfo: minecraftServerInfo
 };
