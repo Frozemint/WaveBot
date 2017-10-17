@@ -18,8 +18,10 @@ function readCommand(message, client){
 				m.edit(`:white_check_mark: | Ping is ${m.createdTimestamp - message.createdTimestamp}ms. Discord.js Ping is ${Math.round(client.ping)}ms`));
     		break;
     	case "say":
-    		message.delete();
-    		message.channel.send(message.content.substring(args[0].length + 1));
+    		if (permissions.checkPermissions(message)){
+    			message.delete();
+    			message.channel.send(message.content.substring(args[0].length + 1));
+    		}
     		break;
     	case "exit":
     		if (permissions.checkPermissions(message)){
@@ -41,7 +43,6 @@ function readCommand(message, client){
 			} else if (!args[1]){
 				message.channel.send(":information_source: | You need to specify how many messages to screen for deleting.");
 			}
-			break;
     		break;
     	default:
     		break;
