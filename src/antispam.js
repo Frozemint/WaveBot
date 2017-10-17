@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const tokens = require('../token.json'); //file for Discord Bot token.
 const startFile = require('./start.js');
+const statistics = require('./statistics.js');
 
 var antiSpam = true;
 

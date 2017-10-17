@@ -6,6 +6,7 @@ const client = new Discord.Client({autoReconnect: true});
 
 const botCommands = require('./botCommands.js');
 const antispam = require('./antispam.js');
+const statistics = require('./statistics.js');
 
 //===============================
 //These define the Node process itself, not the Discord Bot
@@ -37,8 +38,9 @@ client.once('ready', () => {
 })
 
 client.on('message', function(message){
-	if (antispam.antiSpamCheck(message)){ message.delete(); }
+	if (antispam.antiSpamCheck(message)){ message.delete(); statistics.increaseRemovedCount(); }
 	botCommands.readCommand(message, client);
+	statistics.trackMessage(message);
 })
 
 client.login(tokens.botToken);

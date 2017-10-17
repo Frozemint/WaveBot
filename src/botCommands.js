@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const tokens = require('../token.json'); //file for Discord Bot token.
 const permissions = require('./permissions.js');
 const antispam = require('./antispam.js');
+const statistics = require('./statistics.js');
 
 
 function readCommand(message, client){
@@ -23,6 +24,8 @@ function readCommand(message, client){
     			message.channel.send(message.content.substring(args[0].length + 1));
     		}
     		break;
+    	// case "info":
+    	// 	statistic
     	case "exit":
     		if (permissions.checkPermissions(message)){
     			client.destroy().then(function() { process.exit(0);});
@@ -44,6 +47,9 @@ function readCommand(message, client){
 				message.channel.send(":information_source: | You need to specify how many messages to screen for deleting.");
 			}
     		break;
+    	case "invite":
+			 message.channel.send('Invite link for WaveBot: https://discordapp.com/api/oauth2/authorize?client_id=233380635777957890&scope=bot&permissions=0x00002000');
+			 break;
     	default:
     		break;
 	}
