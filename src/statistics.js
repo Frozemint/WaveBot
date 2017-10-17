@@ -7,7 +7,7 @@ function trackMessage(message){
 	if (message.author.bot){
 		totalBotMessage++;
 	}
-	if (!message.author && message.content[0] === tokens.prefix){
+	if (!message.author.bot && message.content[0] === tokens.prefix){
 		commandCount++;
 	}
 }

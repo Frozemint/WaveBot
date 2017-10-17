@@ -24,7 +24,8 @@ function clearMessages(message, messageMagnitude){
 
 function antiSpamCheck(message){
 	/* Check if writer of message is:
-	- A bot (this also excludes WaveBot since WaveBot is a bot)
+	- A bot
+	- NOT WaveBot (WaveBot has immunity against itself)
 	- Message is written in servers we watch as specified in the config
 	- Message is NOT WRITTEN in whitelisted channels
 	- Message DOES NOT contain whitelisted words
@@ -35,6 +36,7 @@ function antiSpamCheck(message){
 	const regex = new RegExp(tokens.whitelistWords.join("|"), "im");
 
 	return (antiSpam && message.author.bot &&
+		message.author != startFile.client.user &&
 		tokens.whitelistChannels.indexOf(message.channel.id)< 0 &&
 		msg.match(regex) === null &&
 		tokens.checkServers.indexOf(message.guild.id) > -1);
