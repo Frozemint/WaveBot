@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
 const tokens = require('../token.json'); //file for Discord Bot token.
 const permissions = require('./permissions.js');
+const antispam = require('./antispam.js');
 
-var silentMode = false;
 
 function readCommand(message, client){
 	if (checkComandConditions(message)) return;
@@ -11,13 +11,6 @@ function readCommand(message, client){
 	args[0] = args[0].substring(1, args[0].length);
 
 	console.log(Date() + ': Running command ' + message.content + ' typed by ' + message.author.username);
-
-	// if (args[0].toLowerCase() === "silent" && permissions.checkPermissions(message)){
-	// 	silentMode = !silentMode;
-	// 	message.channel.send("Silent Mode set to " + silentMode);
-	// }
-
-	// if (silentMode) return;
 
 	switch(args[0].toLowerCase()){
 		case "ping":
@@ -42,6 +35,13 @@ function readCommand(message, client){
 					message.channel.send(`:warning: | Encountered error during eval:\n` + `\`\`\`${err}\`\`\``);
 				}
 			}
+		case "clear":
+			if (permissions.checkPermissions(message) && args[1]){
+				antispam.clearMessages(message, args[1]);
+			} else if (!args[1]){
+				message.channel.send(":information_source: | You need to specify how many messages to screen for deleting.");
+			}
+			break;
     		break;
     	default:
     		break;
