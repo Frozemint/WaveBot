@@ -11,7 +11,7 @@ function readCommand(message, client){
 	const args = message.content.split(" ");
 	args[0] = args[0].substring(1, args[0].length);
 
-	console.log(Date() + ': Running command ' + message.content + ' typed by ' + message.author.username);
+	console.log(Date() + ': Running command ' + message.content + ' typed by ' + message.author.tag);
 
 	switch(args[0].toLowerCase()){
 		case "ping":
@@ -24,8 +24,9 @@ function readCommand(message, client){
     			message.channel.send(message.content.substring(args[0].length + 1));
     		}
     		break;
-    	// case "info":
-    	// 	statistic
+    	case "info":
+    		message.channel.send(statistics.printStatistics());
+    		break;
     	case "exit":
     		if (permissions.checkPermissions(message)){
     			client.destroy().then(function() { process.exit(0);});
