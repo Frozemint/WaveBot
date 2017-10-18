@@ -3,6 +3,7 @@ const tokens = require('../token.json'); //file for Discord Bot token.
 const permissions = require('./permissions.js');
 const antispam = require('./antispam.js');
 const statistics = require('./statistics.js');
+const customCommands = require('./customCommands.js');
 
 
 function readCommand(message, client){
@@ -26,6 +27,10 @@ function readCommand(message, client){
     		break;
     	case "info":
     		message.channel.send(statistics.printStatistics());
+    		break;
+    	case "command":
+    	case "commands":
+    		customCommands.readUserOrders(message);
     		break;
     	case "exit":
     		if (permissions.checkPermissions(message)){
@@ -52,6 +57,7 @@ function readCommand(message, client){
 			 message.channel.send('Invite link for WaveBot: https://discordapp.com/api/oauth2/authorize?client_id=233380635777957890&scope=bot&permissions=0x00002000');
 			 break;
     	default:
+    		customCommands.readCustomCommands(message);
     		break;
 	}
 }

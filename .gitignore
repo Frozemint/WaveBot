@@ -2,3 +2,4 @@ start.sh
 tokens.json
 tokens.json.example
 error.log
+customCommands.json

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const Discord = require('discord.js');
 const tokens = require('../token.json'); //file for Discord Bot token.
@@ -28,6 +29,26 @@ process.on('exit', function(code){
 // });
 //===============================
 //End of Node process setup
+//===============================
+//Initial setup
+
+//Create a customCommands.json file if it doesn't already exist.
+fs.open('customCommands.json','r', function(err, fd){
+	if (err){
+		fs.writeFile(path.join(__dirname, '../src/customCommands.json'), '{ }', function(err){
+			if(err){
+				console.log(err); //log errors if customCommands.json cannot be created.
+			}
+			console.log("Successfully created customCommands.json!");
+		});
+	} else {
+		console.log("customCommands.json already exist. Not doing any new work.");
+	}
+});
+
+//================================
+//End of Initial Setup
+//================================
 
 client.once('ready', () => {
 	console.log('Time is now: ' + Date());
