@@ -12,6 +12,7 @@ const commands = {
 		if (checkPermissions(msg)) process.exit(0);
 	},
 	'poll': (msg)=>{
+		if (votingJson[msg.guild.id]) return msg.channel.send(':x: A poll is already underway!');
 		let args = msg.content.substring(configFile.commandPrefix.length + 5, msg.content.length).split(";"); //what the fuck
 		args = args.filter(function(item, index){ return args.indexOf(item) == index && String(item); });
 		if (!checkPermissions(msg)) return;
@@ -22,7 +23,7 @@ const commands = {
 		votingJson[msg.guild.id].options = args.slice(1, args.length).map(x => x.toLowerCase());
 		votingJson[msg.guild.id].highestVote = 0;
 
-		return msg.channel.send(':white_check_mark: Started a poll with question: `' + votingJson[msg.guild.id].question + '`\n\n:ballot_box: Options: `' + votingJson[msg.guild.id].options + '`');
+		return msg.channel.send(':white_check_mark: Started a poll with question: `' + votingJson[msg.guild.id].question + '`\n:ballot_box: Options: `' + votingJson[msg.guild.id].options + '`');
 	},
 	'vote': (msg)=>{
 		if (!votingJson[msg.guild.id]) return msg.channel.send(':x: There are no poll underway.');
