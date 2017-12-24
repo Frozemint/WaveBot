@@ -1,5 +1,4 @@
 var configFile = require('../config/config.json');
-
 let votingJson = {};
 
 const commands = {
@@ -23,14 +22,14 @@ const commands = {
 		votingJson[msg.guild.id].options = args.slice(1, args.length).map(x => x.toLowerCase());
 		votingJson[msg.guild.id].highestVote = 0;
 
-		return msg.channel.send('Started a poll with question: ' + votingJson[msg.guild.id].question + '\nOptions: ' + votingJson[msg.guild.id].options);
+		return msg.channel.send(':white_check_mark: Started a poll with question: `' + votingJson[msg.guild.id].question + '`\n\n:ballot_box: Options: `' + votingJson[msg.guild.id].options + '`');
 	},
 	'vote': (msg)=>{
 		if (!votingJson[msg.guild.id]) return msg.channel.send(':x: There are no poll underway.');
 		if (!msg.content.split(" ")[1] || votingJson[msg.guild.id].options.indexOf(msg.content.split(" ")[1].toLowerCase()) === -1) return msg.channel.send(':x: There is no such option in the poll.');
 
 		if (!findVote(msg)){
-			votingJson[msg.guild.id].voters.push(msg.content.split(" ")[1] + '|' + msg.author.id + '|' + msg.author.username);
+			votingJson[msg.guild.id].voters.push(msg.content.split(" ")[1].toLowerCase() + '|' + msg.author.id + '|' + msg.author.username);
 		} else {
 			msg.delete();
 			return msg.reply('You have already voted once!');
@@ -45,7 +44,7 @@ const commands = {
 		for (i = 0; i < votingJson[msg.guild.id].options.length; i++){
 			resultString += `${votingJson[msg.guild.id].options[i]} :: ${countOptionVote(votingJson[msg.guild.id].options[i], msg)}\n`;
 		}
-		return msg.channel.send(resultString);
+		return msg.channel.send(resultString, {code: 'diff'});
 	},
 	'endpoll': (msg)=>{
 		if (!votingJson[msg.guild.id]) return msg.channel.send(':x: There are no poll underway.');
@@ -56,7 +55,7 @@ const commands = {
 		}
 		console.log(votingJson[msg.guild.id]);
 		delete votingJson[msg.guild.id];
-		return msg.channel.send(resultString);
+		return msg.channel.send(resultString, {code: 'diff'});
 	}
 
 }
