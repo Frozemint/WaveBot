@@ -27,7 +27,7 @@ client.on('ready', () =>{
 })
 
 client.on('message', msg =>{
-	if (Math.random() > 0.6 && !msg.author.bot) msg.react('🎄');
+	//if (Math.random() > 0.6 && !msg.author.bot) msg.react('🎄');  //festive boi
 	if (!msg.content.startsWith(configFile.commandPrefix) || msg.author.bot) return;
 	if (commands.hasOwnProperty(msg.content.toLowerCase().slice(configFile.commandPrefix.length).split(' ')[0])) commands[msg.content.toLowerCase().slice(configFile.commandPrefix.length).split(' ')[0]](msg);
 })
