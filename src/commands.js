@@ -57,6 +57,15 @@ const commands = {
 		console.log(votingJson[msg.guild.id]);
 		delete votingJson[msg.guild.id];
 		return msg.channel.send(resultString, {code: 'diff'});
+	},
+	'clear': (msg)=>{
+		if (checkPermissions(msg)) {
+			msg.channel.fetchMessages({limit: 100}).then(m =>{
+				msg.channel.bulkDelete(m.filter( (msg) =>{ return (msg.author.id == 233380635777957890 || msg.content.startsWith(configFile.commandPrefix));} ))
+				.catch(err => msg.channel.send(' :warning: Error while deleting messages: ' + err))
+				.then(msg.channel.send('Finished clearing channel of WaveBot messages!'));
+			});
+		}
 	}
 
 }
