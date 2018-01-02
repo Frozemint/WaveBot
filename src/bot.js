@@ -5,15 +5,15 @@ var commands = require('./commands.js');
 commands = commands.commands;
 
 process.title = 'wavebot';
-process.on('exit', (code) => { console.log('Bot exiting ' + ((code > 0) ? 'with error' : 'normally') + ' at time: ' + Date()); });
-process.on('SIGINT', () => { console.log('Caught ^C, exiting at time: ' + Date()); });
+process.on('exit', (code) => { console.log('Bot exiting ' + ((code > 0) ? 'with error' : 'normally') + ' at time: ' + Date()); client.destroy(); process.exit(code);});
+process.on('SIGINT', () => { console.log('  Caught ^C, exiting... '); client.destroy(); process.exit(0);});
 process.on('uncaughtException', (err) => { 
 	console.log('UNCAUGHT EXCEPTION at time ' + Date() + '\n' + ((err && err.stack) ? err.stack : err) + '\n');
-	process.exit(1);
+	client.destroy(); process.exit(1);
  });
 
 client.on('ready', () =>{
-	consodle.log('Bot now online. Time is ' + Date());
+	console.log('Bot now online. Time is ' + Date());
 })
 
 client.on('message', msg =>{
