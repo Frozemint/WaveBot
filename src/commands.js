@@ -12,11 +12,11 @@ const commands = {
 		if (checkPermissions(msg)) process.exit(0);
 	},
 	'poll': (msg)=>{
-		if (votingJson[msg.guild.id]) return msg.channel.send(':x: A poll is already underway!');
+		if (votingJson[msg.guild.id]) {return msg.channel.send(':x: A poll is already underway!');}
 		let args = msg.content.substring(configFile.commandPrefix.length + 5, msg.content.length).split(";"); //what the fuck
 		args = args.filter(function(item, index){ return args.indexOf(item) == index && String(item); });
-		if (!checkPermissions(msg)) return;
-		if (args.length < 3) return msg.channel.send(':x: Failed to start a poll. Make sure there is a question and at least two unique options.');
+		if (!checkPermissions(msg)) {return;}
+		if (args.length < 3) { return msg.channel.send(':x: Failed to start a poll. Make sure there is a question and at least two unique options.'); }
 		votingJson[msg.guild.id] = {};
 		votingJson[msg.guild.id].voters = [];
 		votingJson[msg.guild.id].question = args[0];
@@ -27,7 +27,7 @@ const commands = {
 	},
 	'vote': (msg)=>{
 		if (!votingJson[msg.guild.id]) return msg.channel.send(':x: There are no poll underway.');
-		if (!msg.content.split(" ")[1] || votingJson[msg.guild.id].options.indexOf(msg.content.split(" ")[1].toLowerCase()) === -1) return msg.channel.send(':x: There is no such option in the poll.');
+		if (!msg.content.split(" ")[1] || votingJson[msg.guild.id].options.indexOf(msg.content.split(" ")[1].toLowerCase()) === -1) { return msg.channel.send(':x: There is no such option in the poll.'); }
 
 		if (!findVote(msg)){
 			votingJson[msg.guild.id].voters.push(msg.content.split(" ")[1].toLowerCase() + '|' + msg.author.id + '|' + msg.author.username);
@@ -39,7 +39,7 @@ const commands = {
 		return msg.reply('Your vote has been recorded!');
 	},
 	'results': (msg)=>{
-		if (!votingJson[msg.guild.id]) return msg.channel.send(':x: There are no poll underway.');
+		if (!votingJson[msg.guild.id]) { return msg.channel.send(':x: There are no poll underway.'); }
 		let resultString = `---== VOTING RESULTS ON: ${votingJson[msg.guild.id].question} ==---\n\n`;
 
 		for (i = 0; i < votingJson[msg.guild.id].options.length; i++){
@@ -48,7 +48,7 @@ const commands = {
 		return msg.channel.send(resultString, {code: 'diff'});
 	},
 	'endpoll': (msg)=>{
-		if (!votingJson[msg.guild.id]) return msg.channel.send(':x: There are no poll underway.');
+		if (!votingJson[msg.guild.id]) { return msg.channel.send(':x: There are no poll underway.'); }
 		let resultString = `---== FINAL VOTING RESULTS ON: ${votingJson[msg.guild.id].question} ==---\n\n`;
 
 		for (i = 0; i < votingJson[msg.guild.id].options.length; i++){
@@ -72,7 +72,7 @@ const commands = {
 
 function findVote(msg){
 	for (let i = 0; i < votingJson[msg.guild.id].voters.length; i++){
-		if (votingJson[msg.guild.id].voters[i].split('|')[1] === msg.author.id) return true;
+		if (votingJson[msg.guild.id].voters[i].split('|')[1] === msg.author.id) { return true; }
 	}
 	return false;
 }
