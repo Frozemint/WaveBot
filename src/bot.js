@@ -11,6 +11,12 @@ process.on('uncaughtException', (err) => {
 	console.log('UNCAUGHT EXCEPTION at time ' + Date() + '\n' + ((err && err.stack) ? err.stack : err) + '\n');
 	client.destroy(); process.exit(1);
  });
+process.on('unhandledRejection', (reason, p) => {
+	//this is usually thrown by Discord error... common causes are connection errors...
+	//we restart the bot if that is the case.
+	console.log('UNHANDLED REJECTION at time ' + Date() + '\n' + 'Promise: ' + p + ' reason:' + reason);
+	client.destroy(); process.exit(1);
+});
 
 client.on('ready', () =>{
 	console.log('Bot now online. Time is ' + Date());
@@ -23,6 +29,11 @@ client.on('message', msg =>{
 		console.log(Date() + '| Running command "' + msg.content + '" sent by ' + msg.author.tag);
 		commands[msg.content.toLowerCase().slice(configFile.commandPrefix.length).split(' ')[0]](msg);
 	}
+});
+
+client.on('reconnecting', function(){
+	//This code is run when bot is reconnecting, added for debugging connection errors
+	console.log(Date() + ': Attempting to reconnect...');
 });
 
 client.login(configFile.botToken);
