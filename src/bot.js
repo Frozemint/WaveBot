@@ -5,6 +5,7 @@ var commands = require('./commands.js');
 commands = commands.commands;
 
 process.title = 'wavebot';
+
 process.on('exit', (code) => { console.log('Bot exiting ' + ((code > 0) ? 'with error' : 'normally') + ' at time: ' + Date()); client.destroy(); process.exit(code);});
 process.on('SIGINT', () => { console.log('  Caught ^C, exiting... '); client.destroy(); process.exit(0);});
 process.on('uncaughtException', (err) => { 
@@ -29,6 +30,11 @@ client.on('message', msg =>{
 		console.log(Date() + '| Running command "' + msg.content + '" sent by ' + msg.author.tag);
 		commands[msg.content.toLowerCase().slice(configFile.commandPrefix.length).split(' ')[0]](msg);
 	}
+});
+
+client.on('error', error =>{
+	console.log('Connection error encountered at ' + Date());
+	console.log('Details:' + error.message);
 });
 
 client.on('reconnecting', function(){
