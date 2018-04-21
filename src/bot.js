@@ -16,7 +16,8 @@ process.on('unhandledRejection', (reason, p) => {
 	//this is usually thrown by Discord error... common causes are connection errors...
 	//we restart the bot if that is the case.
 	console.log('UNHANDLED REJECTION at time ' + Date() + '\n' + 'Promise: ' + p + ' reason:' + reason);
-	client.destroy(); process.exit(1);
+	//client.destroy(); process.exit(1);
+	//ignoring for now, these are usually connection errors
 });
 
 client.on('ready', () =>{
